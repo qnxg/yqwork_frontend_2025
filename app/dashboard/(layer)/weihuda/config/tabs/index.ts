@@ -1,0 +1,10 @@
+export { default as TermConfigTab } from "./TermConfigTab";
+export type { TermConfigTabProps, ClassStartEntry } from "./TermConfigTab";
+export { default as ZhihuConfigTab } from "./ZhihuConfigTab";
+export type { ZhihuConfigTabProps } from "./ZhihuConfigTab";
+export { default as JifenConfigTab } from "./JifenConfigTab";
+export type { JifenConfigTabProps } from "./JifenConfigTab";
+export { default as FaqConfigTab } from "./FaqConfigTab";
+export type { FaqConfigTabProps } from "./FaqConfigTab";
+export { default as ChangelogConfigTab } from "./ChangelogConfigTab";
+export type { ChangelogConfigTabProps } from "./ChangelogConfigTab";

@@ -1,0 +1,33 @@
+---
+alwaysApply: true
+---
+
+## 项目
+
+- 项目使用 Semi UI。在编写代码时如果需要使用 Semi UI 组件，请尽可能参考 Semi UI 的文档来确保使用了合适的组件以及组件的用法是正确的。
+- 项目是一个前后端分离的项目，工作区内的 yqwork_frontend_2025 是前端，yqwork-rust-2025 是后端。有时我给的需求可能不明确，此时你可以去参考后端，来使自己更明确。
+- 后端代码的路由部分有权限检查，前端在编写代码时应该参考，一些按钮要根据权限来设置隐藏。
+
+## React 规范
+
+- 使用函数组件
+- 实现完整的 prop 类型
+- 遵循 React 最佳实践
+
+## 样式
+
+- 使用 TailwindCSS
+
+## TypeScript
+
+- 遵循 ts 语法
+- 尽量不要有 any，尽可能标好数据类型
+- 使用 async 语法。除非是特殊情况，否则不用 .then 这种链式调用
+- 调用 server action 时，应该使用 utils/action.ts 中的 withToast 函数来包装并完成错误处理。调用 withToast 的部分仍用 try catch 包裹，但是 catch 部分应该什么也不干（因为大多情况下要干的东西已经在 withToast 里干完了），写成 `catch {}` 这种格式。并且除非是需要在 catch 里面抛出错误，不然为了代码的简洁，不写 `finally {}`
+
+## Next.JS
+
+- 对于一个页面，页面的数据加载应该放在 Server Component 中进行。每个页面都有一个 page.tsx，就是负责这一工作的。如果客户端组件需要什么数据，那么应该从其对应的 page.tsx 中获取，然后通过 payload 这个 props 来将 page.tsx 获取到的数据传递给客户端组件。
+- 如果有分页/关键字搜索/筛选等需要在界面中二次获取数据的，请将这些信息记录到 searchParams 中，然后使用 useRouter 来更新 searchParams 使得 Server Component 重新加载以重新获取数据，而不是在 Client Component 中重新获取数据。
+- 遵循 Next.JS 的最佳实践。
+- Next.JS 的一大特点是缓存非常多，请注意缓存需求是否符合业务逻辑。遇到特殊事项请告诉我。
