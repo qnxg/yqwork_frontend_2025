@@ -10,7 +10,9 @@ const WORK_HOUR_STATUS_SUBMITTING = 1; // 申报中
 const WORK_HOUR_RECORD_STATUS_PENDING_APPROVAL = 1; // 部门负责人审核
 
 // 从 statistics 取待办数量：问题反馈未确认(0)、积分兑换待后台确认(0)+待收(1)、知湖待发布(0)
-function getTodoFromStatistics(data: Awaited<ReturnType<typeof getStatisticsApi>>) {
+function getTodoFromStatistics(
+	data: Awaited<ReturnType<typeof getStatisticsApi>>,
+) {
 	let todoFeedback = 0;
 	let todoGoodsRecord = 0;
 	let todoZhihu = 0;
@@ -18,8 +20,7 @@ function getTodoFromStatistics(data: Awaited<ReturnType<typeof getStatisticsApi>
 	const feedbackItems = data["feedback"] ?? [];
 	const goodsItems = data["goods-record"] ?? [];
 	const zhihuItems = data["zhihu"] ?? [];
-	todoFeedback =
-		feedbackItems.find((i) => i.status === 0)?.count ?? 0;
+	todoFeedback = feedbackItems.find((i) => i.status === 0)?.count ?? 0;
 	todoGoodsRecord =
 		(goodsItems.find((i) => i.status === 0)?.count ?? 0) +
 		(goodsItems.find((i) => i.status === 1)?.count ?? 0);
