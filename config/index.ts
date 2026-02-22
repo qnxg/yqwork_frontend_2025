@@ -1,5 +1,5 @@
 // nextjs 服务端访问的 API 路径
-export const API_URL_LOCAL = "http://127.0.0.1:8000";
+export const API_URL_LOCAL = "http://yqwork-rust-2025:8000";
 // 前端访问的 API 路径
 export const API_URL_REMOTE = "https://api.work.qnxg.cn";
 // 当前应用的 URL

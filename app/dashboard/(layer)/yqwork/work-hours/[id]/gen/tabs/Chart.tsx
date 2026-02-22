@@ -98,4 +98,3 @@ const Chart: React.FC<IChartProps> = ({ stats }) => {
 };
 
 export default memo(Chart);
-
