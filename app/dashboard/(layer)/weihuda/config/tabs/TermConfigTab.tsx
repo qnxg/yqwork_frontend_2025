@@ -264,10 +264,8 @@ export default function TermConfigTab({
 				putMiniConfigByIdApi(FLEX_TIME_CONFIG_KEY, toFlexTimeJson(flexEntries)),
 			);
 			Toast.success("保存成功");
-		} catch {
-		} finally {
-			setSaving(false);
-		}
+		} catch {}
+		setSaving(false);
 	};
 
 	const getSemesterName = (semesterKey: string) => {

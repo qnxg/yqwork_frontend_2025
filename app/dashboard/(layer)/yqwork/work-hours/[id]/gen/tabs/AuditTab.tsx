@@ -284,11 +284,8 @@ const GenWorkHoursAudit = ({
 									"同意全部成功",
 								);
 								router.refresh();
-							} catch {
-								// 错误已在 withToast 中统一处理
-							} finally {
-								setLoading("");
-							}
+							} catch {}
+							setLoading("");
 						}}
 						loading={loading === "ac all"}
 						disabled={loading !== ""}
@@ -306,11 +303,8 @@ const GenWorkHoursAudit = ({
 									"发放全部成功",
 								);
 								router.refresh();
-							} catch {
-								// 错误已在 withToast 中统一处理
-							} finally {
-								setLoading("");
-							}
+							} catch {}
+							setLoading("");
 						}}
 						loading={loading === "give all"}
 						disabled={loading !== ""}

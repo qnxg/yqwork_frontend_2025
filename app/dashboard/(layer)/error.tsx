@@ -1,5 +1,6 @@
 "use client"; // Error Boundary 必须是 Client Component
 
+import { parseDigestPayload } from "@/utils/result";
 import {
 	IllustrationNoContent,
 	IllustrationNoContentDark,
@@ -7,19 +8,19 @@ import {
 import { Empty } from "@douyinfe/semi-ui-19";
 import { useEffect, useMemo } from "react";
 
-export default function DashboardError({
-	error,
-}: {
-	error: Error & { name: string };
-}) {
+export default function DashboardError({ error }: { error: Error }) {
 	useEffect(() => {
 		console.error("Dashboard Error:", error);
 	}, [error]);
 
 	const msg = useMemo(() => {
-		let msg = error.message || "未知错误，请重试或联系管理员";
-		if (error.name) msg += ` (错误代码：${error.name})`;
-		return msg;
+		const payload = parseDigestPayload(error);
+		if (payload) {
+			let msg = payload.message || "未知错误，请重试或联系管理员";
+			if (payload.name) msg += ` (错误代码：${payload.name})`;
+			return msg;
+		}
+		return "未知错误，请重试或联系管理员";
 	}, [error]);
 
 	return (

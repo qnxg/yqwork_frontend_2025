@@ -1,6 +1,7 @@
 import { getUserWhoAmI } from "@/api/qnxg/user";
 import AppBar, { AppBarPayload } from "./AppBar";
 import { getDepartmentPageApi } from "@/api/qnxg/department";
+import { NotFoundError } from "@/utils/result";
 
 export default async function Layout({
 	children,
@@ -12,7 +13,7 @@ export default async function Layout({
 		(d) => d.id === whoami.user.info.departmentId,
 	);
 	if (!department) {
-		throw new Error("用户所属部门不存在");
+		throw new NotFoundError("用户所属部门不存在");
 	}
 	const payload: AppBarPayload = {
 		user: whoami.user,

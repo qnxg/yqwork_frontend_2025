@@ -165,10 +165,8 @@ export default function FaqConfigTab({ faqStr, canEdit }: FaqConfigTabProps) {
 				() => putMiniConfigByIdApi(FAQ_CONFIG_KEY, toFaqJson(categories)),
 				"常见问题已保存",
 			);
-		} catch {
-		} finally {
-			setSaving(false);
-		}
+		} catch {}
+		setSaving(false);
 	};
 
 	return (

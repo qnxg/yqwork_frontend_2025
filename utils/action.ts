@@ -2,6 +2,7 @@
 
 import { Toast } from "@douyinfe/semi-ui-19";
 import { formatToString } from ".";
+import { parseDigestPayload } from "./result";
 
 /**
  * 在客户端调用 Server Action 时的错误处理包装
@@ -19,7 +20,12 @@ export async function withToast<T>(
 		return result;
 	} catch (err) {
 		if (err instanceof Error) {
-			Toast.error(err.message ?? "操作失败");
+			const payload = parseDigestPayload(err);
+			if (payload) {
+				Toast.error(payload.message ?? "操作失败");
+				throw new Error(payload.message);
+			}
+			Toast.error("操作失败");
 		} else {
 			Toast.error(formatToString(err));
 		}

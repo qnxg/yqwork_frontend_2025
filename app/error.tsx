@@ -1,5 +1,6 @@
 "use client"; // Error Boundary 必须是 Client Component
 
+import { parseDigestPayload } from "@/utils/result";
 import {
 	IllustrationNoContent,
 	IllustrationNoContentDark,
@@ -13,13 +14,17 @@ export default function GlobalError({
 	error: Error & { name: string };
 }) {
 	useEffect(() => {
-		console.error("Dashboard Error:", error);
+		console.error("Global Error:", error);
 	}, [error]);
 
 	const msg = useMemo(() => {
-		let msg = error.message || "未知错误，请重试或联系管理员";
-		if (error.name) msg += ` (错误代码：${error.name})`;
-		return msg;
+		const payload = parseDigestPayload(error);
+		if (payload) {
+			let msg = payload.message || "未知错误，请重试或联系管理员";
+			if (payload.name) msg += ` (错误代码：${payload.name})`;
+			return msg;
+		}
+		return "未知错误，请重试或联系管理员";
 	}, [error]);
 
 	return (

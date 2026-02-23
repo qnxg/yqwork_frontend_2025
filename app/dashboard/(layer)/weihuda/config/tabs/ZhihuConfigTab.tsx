@@ -45,10 +45,8 @@ export default function ZhihuConfigTab({
 					),
 				"保存成功",
 			);
-		} catch {
-		} finally {
-			setSaving(false);
-		}
+		} catch {}
+		setSaving(false);
 	};
 
 	return (

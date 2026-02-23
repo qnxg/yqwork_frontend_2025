@@ -4,7 +4,7 @@ import { API_URL_LOCAL } from "@/config";
 import axios, { AxiosInstance } from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { PermissionDeniedError } from "@/utils/result";
+import { AppError, PermissionDeniedError, RequestError } from "@/utils/result";
 
 /**
  * 从 cookie 获取 session token
@@ -44,17 +44,20 @@ export async function createServerAxios(auth = true): Promise<AxiosInstance> {
 			if (code === 200) return data;
 			if (code === 401) redirect("/login");
 			if (code === 403) throw new PermissionDeniedError();
-			return Promise.reject(new Error(msg || "请求失败"));
+			return Promise.reject(new RequestError(msg || "请求失败"));
 		},
 		(err) => {
+			if (err instanceof AppError) {
+				return Promise.reject(err);
+			}
 			if (axios.isAxiosError(err) && err.response) {
 				const { status, data } = err.response;
 				if (status === 401) redirect("/login");
 				if (status === 403) throw new PermissionDeniedError();
 				const msg = (data as { msg?: string })?.msg || err.message;
-				return Promise.reject(new Error(msg));
+				return Promise.reject(new RequestError(msg));
 			}
-			return Promise.reject(err);
+			return Promise.reject(new RequestError(err.message || "请求失败"));
 		},
 	);
 

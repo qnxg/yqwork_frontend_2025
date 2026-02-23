@@ -1,6 +1,7 @@
 "use server";
 
 import { UPLOAD_SERVER_URL_REMOTE } from "@/config";
+import { InternalError } from "@/utils/result";
 import axios from "axios";
 
 /**
@@ -13,11 +14,11 @@ export const postUploadImgApi = async (file: File, subFolder?: string) => {
 	if (subFolder) {
 		// subFolder不能包含特殊字符，长度不能超过20
 		if (subFolder.length > 20) {
-			throw new Error("子文件夹名称不能超过20个字符");
+			throw new InternalError("子文件夹名称不能超过20个字符");
 		}
 		const reg = /^[a-zA-Z0-9_-]+$/;
 		if (!reg.test(subFolder)) {
-			throw new Error("子文件夹名称只能包含字母、数字、下划线、短横杠");
+			throw new InternalError("子文件夹名称只能包含字母、数字、下划线、短横杠");
 		}
 		formData.append("subFolder", subFolder);
 	}
@@ -41,11 +42,11 @@ export const postUploadFileApi = async (file: File, subFolder?: string) => {
 	if (subFolder) {
 		// subFolder不能包含特殊字符，长度不能超过20
 		if (subFolder.length > 20) {
-			throw new Error("子文件夹名称不能超过20个字符");
+			throw new InternalError("子文件夹名称不能超过20个字符");
 		}
 		const reg = /^[a-zA-Z0-9_-]+$/;
 		if (!reg.test(subFolder)) {
-			throw new Error("子文件夹名称只能包含字母、数字、下划线、短横杠");
+			throw new InternalError("子文件夹名称只能包含字母、数字、下划线、短横杠");
 		}
 		formData.append("subFolder", subFolder);
 	}

@@ -31,10 +31,8 @@ export default function JifenConfigTab({
 					),
 				"保存成功",
 			);
-		} catch {
-		} finally {
-			setSaving(false);
-		}
+		} catch {}
+		setSaving(false);
 	};
 	return (
 		<Form labelPosition="top" layout="vertical">

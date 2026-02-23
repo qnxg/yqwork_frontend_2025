@@ -180,10 +180,8 @@ export default function ChangelogConfigTab({
 					putMiniConfigByIdApi(CHANGELOG_CONFIG_KEY, toChangelogJson(entries)),
 				"更新日志已保存",
 			);
-		} catch {
-		} finally {
-			setSaving(false);
-		}
+		} catch {}
+		setSaving(false);
 	};
 
 	return (

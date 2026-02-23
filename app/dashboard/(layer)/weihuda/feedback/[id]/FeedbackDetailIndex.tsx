@@ -65,10 +65,8 @@ export default function FeedbackDetailIndex({
 				"状态已更新",
 			);
 			if (updated) setFeedbackData(updated);
-		} catch {
-		} finally {
-			setLoading("");
-		}
+		} catch {}
+		setLoading("");
 	};
 
 	const handleAddReply = async () => {
@@ -82,10 +80,8 @@ export default function FeedbackDetailIndex({
 			);
 			replyFormApi.current.reset();
 			router.refresh();
-		} catch {
-		} finally {
-			setLoading("");
-		}
+		} catch {}
+		setLoading("");
 	};
 
 	const handleDeleteMsg = (msgId: number) => {
