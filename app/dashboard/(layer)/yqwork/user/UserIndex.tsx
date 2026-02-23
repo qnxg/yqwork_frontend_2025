@@ -36,7 +36,6 @@ import {
 	RequiredRule,
 	ZAIKU_HELP,
 } from "@/utils/form";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import { withToast } from "@/utils/action";
 
 export interface UserIndexPayload {
@@ -113,8 +112,6 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 	useEffect(() => {
 		setLoading((prev) => (prev === "table" ? "" : prev));
 	}, [payload.data]);
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	// 处理筛选
 	const handleFilter = () => {

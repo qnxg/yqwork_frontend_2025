@@ -23,7 +23,6 @@ import {
 import { FeedbackStatusOptions } from "@/config/fields";
 import { hasPermission, sliceString } from "@/utils";
 import { withToast } from "@/utils/action";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import dayjs from "dayjs";
 
 const PERMISSION_PREFIX = "hdwsh:feedback";
@@ -76,8 +75,6 @@ export default function FeedbackIndex({
 	useEffect(() => {
 		setLoading((prev) => (prev === "table" ? "" : prev));
 	}, [payload.data]);
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	const { canDelete } = useMemo(() => {
 		const perms = payload.permissions;

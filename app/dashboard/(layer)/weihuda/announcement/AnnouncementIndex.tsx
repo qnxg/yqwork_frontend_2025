@@ -24,7 +24,6 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { RequiredRule } from "@/utils/form";
 import { hasPermission, sliceString } from "@/utils";
 import { withToast } from "@/utils/action";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 
 const PERMISSION_PREFIX = "hdwsh:announcement";
 
@@ -69,8 +68,6 @@ export default function AnnouncementIndex({
 	useEffect(() => {
 		setLoading((prev) => (prev === "table" ? "" : prev));
 	}, [payload.data]);
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	const { canAdd, canEdit, canDelete } = useMemo(() => {
 		const perms = payload.permissions;

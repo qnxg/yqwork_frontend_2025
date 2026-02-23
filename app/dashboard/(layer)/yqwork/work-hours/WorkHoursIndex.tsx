@@ -17,7 +17,6 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { DateTimeRender, StatusRender } from "@/utils/table";
 import { WorkHourStatusOptions } from "@/config/fields";
 import dayjs from "dayjs";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import { withToast } from "@/utils/action";
 
 export interface WorkHoursIndexPayload {
@@ -72,8 +71,6 @@ export default function WorkHoursIndex({
 				),
 			};
 		}, [payload.permissions]);
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	// 分页以 URL 为准
 	const { page: urlPage, pageSize: urlPageSize } =

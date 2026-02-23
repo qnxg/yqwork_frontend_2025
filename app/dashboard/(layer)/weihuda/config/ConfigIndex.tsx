@@ -25,7 +25,6 @@ import {
 	TermConfigTab,
 	ZhihuConfigTab,
 } from "./tabs";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import { useMemo } from "react";
 
 const PERMISSION_PREFIX = "hdwsh:miniConfig";
@@ -56,8 +55,6 @@ export default function ConfigIndex({
 		next.set("tab", key);
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	const nextVacationDateStr = getConfigValue(
 		configList,

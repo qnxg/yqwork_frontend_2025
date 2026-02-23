@@ -1,6 +1,5 @@
 "use client";
 
-import { useRefreshOnPathnameChange } from "@/utils/hooks";
 import { Tabs } from "@douyinfe/semi-ui-19";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -31,8 +30,6 @@ export default function JifenLayout({
 	const handleTabChange = (key: string) => {
 		router.push(`${JIFEN_BASE}/${key}`, { scroll: false });
 	};
-
-	useRefreshOnPathnameChange(pathname);
 
 	return (
 		<div>

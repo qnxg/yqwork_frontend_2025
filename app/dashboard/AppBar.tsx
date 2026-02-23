@@ -20,8 +20,12 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useMemo, useState } from "react";
 import { ItemKey, NavItems } from "@douyinfe/semi-ui-19/lib/es/navigation";
 import { IUser } from "@/api/qnxg/user";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { logout } from "@/utils/auth";
+import {
+	useRefreshOnPathnameChange,
+	useRefreshOnSearchParamsChange,
+} from "@/utils/hooks";
 
 function MobileSubMenu({
 	subMenu,
@@ -123,6 +127,10 @@ export default function AppBar({
 	payload: AppBarPayload;
 }>) {
 	const pathname = usePathname();
+	const searchParams = useSearchParams();
+	// 确保所有页面都可以在 pathname 和 searchParams 变化时，重新拉取数据。
+	useRefreshOnSearchParamsChange(searchParams);
+	useRefreshOnPathnameChange(pathname);
 	const router = useRouter();
 
 	const handleNavClick =

@@ -13,7 +13,6 @@ import {
 import { hasPermission } from "@/utils";
 import { withToast } from "@/utils/action";
 import { RequiredRule } from "@/utils/form";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import dayjs from "dayjs";
 
 export interface JifenRecordIndexProps {
@@ -63,8 +62,6 @@ export default function JifenRecordIndex({
 		setData(initialData);
 		setLoading((prev) => (prev === "table" ? "" : prev));
 	}, [initialData]);
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	const updateSearchParams = (params: IJifenRecordPageQueryData) => {
 		const next = new URLSearchParams(searchParams.toString());

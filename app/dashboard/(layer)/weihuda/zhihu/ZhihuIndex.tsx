@@ -38,7 +38,6 @@ import {
 import { ZhihuPublishStatusOptions, ZhihuTypeOptions } from "@/config/fields";
 import { getProxyUrl, hasPermission, sliceString } from "@/utils";
 import { withToast } from "@/utils/action";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import dayjs from "dayjs";
 import XRichText from "@/components/XRichText";
 import { IDomEditor } from "@wangeditor/editor";
@@ -97,8 +96,6 @@ export default function ZhihuIndex({
 	useEffect(() => {
 		setLoading((prev) => (prev === "table" ? "" : prev));
 	}, [payload.data]);
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	const { canAdd, canEdit, canDelete } = useMemo(() => {
 		const perms = payload.permissions;

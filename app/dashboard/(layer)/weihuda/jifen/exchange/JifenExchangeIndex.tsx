@@ -25,7 +25,6 @@ import type { IJifenGoods } from "@/api/weihuda/jifenGoods";
 import { GoodsRecordStatusOptions } from "@/config/fields";
 import { hasPermission } from "@/utils";
 import { withToast } from "@/utils/action";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import dayjs from "dayjs";
 
 export interface JifenExchangeIndexProps {
@@ -79,8 +78,6 @@ export default function JifenExchangeIndex({
 	const { rows, count: total } = data;
 
 	const goodsMap = new Map(goodsList.map((g) => [g.id, g.name]));
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	const updateSearchParams = (params: Partial<IGoodsRecordPageQueryData>) => {
 		const next = new URLSearchParams(searchParams.toString());

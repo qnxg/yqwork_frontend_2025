@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
 import { GenTabKey, GenWorkHoursRecordPayload, TAB_KEYS } from "./config";
 
 import { Tabs } from "@douyinfe/semi-ui-19";
@@ -24,8 +23,6 @@ const GenWorkHoursRecordIndex = ({
 		next.set("tab", key);
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
-
-	useRefreshOnSearchParamsChange(searchParams);
 
 	return (
 		<div>
