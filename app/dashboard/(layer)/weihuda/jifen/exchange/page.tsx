@@ -33,7 +33,6 @@ export default async function JifenExchangePage({
 			initialData={goodsRecordPage}
 			goodsList={goods}
 			permissions={permissions}
-			permissionPrefix="hdwsh:goodsRecord"
 		/>
 	);
 }

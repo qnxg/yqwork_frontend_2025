@@ -19,7 +19,7 @@ import {
 	Tooltip,
 } from "@douyinfe/semi-ui-19";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { RequiredRule } from "@/utils/form";
 import { hasPermission, sliceString } from "@/utils";
@@ -72,6 +72,15 @@ export default function AnnouncementIndex({
 
 	useRefreshOnSearchParamsChange(searchParams);
 
+	const { canAdd, canEdit, canDelete } = useMemo(() => {
+		const perms = payload.permissions;
+		return {
+			canAdd: hasPermission(perms, `${PERMISSION_PREFIX}:add`),
+			canEdit: hasPermission(perms, `${PERMISSION_PREFIX}:edit`),
+			canDelete: hasPermission(perms, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [payload.permissions]);
+
 	const columns = [
 		{
 			title: "ID",
@@ -120,10 +129,7 @@ export default function AnnouncementIndex({
 				if (isDeleted) return null;
 				return (
 					<Space>
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:edit`,
-						) && (
+						{canEdit && (
 							<Button
 								theme="light"
 								type="secondary"
@@ -137,10 +143,7 @@ export default function AnnouncementIndex({
 								编辑
 							</Button>
 						)}
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:delete`,
-						) && (
+						{canDelete && (
 							<Button
 								theme="light"
 								type="danger"
@@ -209,7 +212,7 @@ export default function AnnouncementIndex({
 
 	return (
 		<div>
-			{hasPermission(payload.permissions, `${PERMISSION_PREFIX}:add`) && (
+			{canAdd && (
 				<Button
 					theme="solid"
 					type="warning"

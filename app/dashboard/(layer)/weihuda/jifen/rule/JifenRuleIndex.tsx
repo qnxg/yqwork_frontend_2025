@@ -3,7 +3,7 @@
 import { Button, Form, Modal, Space, Table } from "@douyinfe/semi-ui-19";
 import { IconDelete, IconEdit, IconPlus } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
 	deleteJifenRuleByIdApi,
@@ -19,7 +19,6 @@ import { RequiredRule } from "@/utils/form";
 export interface JifenRuleIndexProps {
 	initialRules: { count: number; rows: IJifenRule[] };
 	permissions: string[];
-	permissionPrefix: string;
 }
 
 const IS_SHOW_OPTIONS = [
@@ -27,10 +26,11 @@ const IS_SHOW_OPTIONS = [
 	{ label: "否", value: 0 },
 ];
 
+const PERMISSION_PREFIX = "hdwsh:jifenRule";
+
 export default function JifenRuleIndex({
 	initialRules,
 	permissions,
-	permissionPrefix,
 }: JifenRuleIndexProps) {
 	const router = useRouter();
 	const [rules, setRules] = useState(initialRules.rows);
@@ -44,9 +44,13 @@ export default function JifenRuleIndex({
 	const [editing, setEditing] = useState<IJifenRule | null>(null);
 	const formApiRef = useRef<FormApi | null>(null);
 
-	const canAdd = hasPermission(permissions, `${permissionPrefix}:add`);
-	const canEdit = hasPermission(permissions, `${permissionPrefix}:edit`);
-	const canDelete = hasPermission(permissions, `${permissionPrefix}:delete`);
+	const { canAdd, canEdit, canDelete } = useMemo(() => {
+		return {
+			canAdd: hasPermission(permissions, `${PERMISSION_PREFIX}:add`),
+			canEdit: hasPermission(permissions, `${PERMISSION_PREFIX}:edit`),
+			canDelete: hasPermission(permissions, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [permissions]);
 
 	const handleOpenModal = (item: IJifenRule | null) => {
 		setEditing(item);

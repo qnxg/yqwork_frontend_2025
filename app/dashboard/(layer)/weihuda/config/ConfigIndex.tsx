@@ -26,6 +26,7 @@ import {
 	ZhihuConfigTab,
 } from "./tabs";
 import { useRefreshOnSearchParamsChange } from "@/utils/hooks";
+import { useMemo } from "react";
 
 const PERMISSION_PREFIX = "hdwsh:miniConfig";
 
@@ -39,7 +40,11 @@ export default function ConfigIndex({
 	const searchParams = useSearchParams();
 	const { configList, tab, permissions } = payload;
 
-	const canEdit = hasPermission(permissions, `${PERMISSION_PREFIX}:edit`);
+	const { canEdit } = useMemo(() => {
+		return {
+			canEdit: hasPermission(permissions, `${PERMISSION_PREFIX}:edit`),
+		};
+	}, [permissions]);
 
 	const tabFromUrl = searchParams.get("tab");
 	const activeKey: ConfigTabKey = TAB_KEYS.includes(tabFromUrl as ConfigTabKey)

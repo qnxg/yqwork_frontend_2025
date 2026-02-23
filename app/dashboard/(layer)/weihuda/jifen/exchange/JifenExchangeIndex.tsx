@@ -11,7 +11,7 @@ import {
 } from "@douyinfe/semi-ui-19";
 import { IconCheckCircleStroked, IconDelete } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
 	deleteGoodsRecordByIdApi,
@@ -32,7 +32,6 @@ export interface JifenExchangeIndexProps {
 	initialData: IGoodsRecordPageResponseData;
 	goodsList: IJifenGoods[];
 	permissions: string[];
-	permissionPrefix: string;
 }
 
 function parseQueryFromSearchParams(
@@ -49,11 +48,12 @@ function parseQueryFromSearchParams(
 	};
 }
 
+const PERMISSION_PREFIX = "hdwsh:goodsRecord";
+
 export default function JifenExchangeIndex({
 	initialData,
 	goodsList,
 	permissions,
-	permissionPrefix,
 }: JifenExchangeIndexProps) {
 	const router = useRouter();
 	const pathname = usePathname();
@@ -67,8 +67,12 @@ export default function JifenExchangeIndex({
 		setLoading((prev) => (prev === "table" ? "" : prev));
 	}, [initialData]);
 
-	const canEdit = hasPermission(permissions, `${permissionPrefix}:edit`);
-	const canDelete = hasPermission(permissions, `${permissionPrefix}:delete`);
+	const { canEdit, canDelete } = useMemo(() => {
+		return {
+			canEdit: hasPermission(permissions, `${PERMISSION_PREFIX}:edit`),
+			canDelete: hasPermission(permissions, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [permissions]);
 
 	const queryFromUrl = parseQueryFromSearchParams(searchParams);
 	const { page: currentPage, pageSize } = queryFromUrl;

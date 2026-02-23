@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
 	Button,
@@ -70,6 +70,15 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 	const searchParams = useSearchParams();
 	console.log("searchParams", searchParams.toString());
 	const [loading, setLoading] = useState("");
+
+	const { canAdd, canEdit, canDelete } = useMemo(() => {
+		const perms = payload.permissions;
+		return {
+			canAdd: hasPermission(perms, `${PERMISSION_PREFIX}:add`),
+			canEdit: hasPermission(perms, `${PERMISSION_PREFIX}:edit`),
+			canDelete: hasPermission(perms, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [payload.permissions]);
 
 	// 当前查询参数从 URL（useSearchParams）读取
 	const queryFromUrl = parseQueryFromSearchParams(searchParams);
@@ -277,10 +286,7 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 			width: 150,
 			render: (_: unknown, record: IUser) => (
 				<Space>
-					{hasPermission(
-						payload.permissions,
-						`${PERMISSION_PREFIX}:update`,
-					) && (
+					{canEdit && (
 						<Button
 							theme="light"
 							type="secondary"
@@ -295,19 +301,18 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 							编辑
 						</Button>
 					)}
-					{hasPermission(payload.permissions, `${PERMISSION_PREFIX}:delete`) &&
-						record.id !== payload.user.id && (
-							<Button
-								theme="light"
-								type="danger"
-								icon={<IconDelete />}
-								onClick={() => handleDelete(record.id)}
-								loading={loading === `delete-${record.id}`}
-								disabled={loading !== ""}
-							>
-								删除
-							</Button>
-						)}
+					{canDelete && record.id !== payload.user.id && (
+						<Button
+							theme="light"
+							type="danger"
+							icon={<IconDelete />}
+							onClick={() => handleDelete(record.id)}
+							loading={loading === `delete-${record.id}`}
+							disabled={loading !== ""}
+						>
+							删除
+						</Button>
+					)}
 				</Space>
 			),
 		},
@@ -401,7 +406,7 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 				</Space>
 			</Card>
 
-			{hasPermission(payload.permissions, `${PERMISSION_PREFIX}:add`) && (
+			{canAdd && (
 				<Button
 					theme="solid"
 					type="warning"

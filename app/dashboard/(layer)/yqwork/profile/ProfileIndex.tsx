@@ -12,11 +12,7 @@ import { withToast } from "@/utils/action";
 import { logout } from "@/utils/auth";
 import { ProfilePayload } from "./page";
 
-export default function ProfileClient({
-	payload,
-}: {
-	payload: ProfilePayload;
-}) {
+export default function ProfileIndex({ payload }: { payload: ProfilePayload }) {
 	const router = useRouter();
 	const { user, departments } = payload;
 	const infoFormApi = useRef<FormApi>(null);

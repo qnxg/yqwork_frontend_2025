@@ -3,7 +3,7 @@
 import { Button, Card, Form, Modal, Space, Table } from "@douyinfe/semi-ui-19";
 import { IconPlus } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
 	postJifenRecordApi,
@@ -19,7 +19,6 @@ import dayjs from "dayjs";
 export interface JifenRecordIndexProps {
 	initialData: IJifenRecordPageResponseData;
 	permissions: string[];
-	permissionPrefix: string;
 }
 
 function parseQueryFromSearchParams(
@@ -34,10 +33,11 @@ function parseQueryFromSearchParams(
 	};
 }
 
+const PERMISSION_PREFIX = "hdwsh:jifenRecord";
+
 export default function JifenRecordIndex({
 	initialData,
 	permissions,
-	permissionPrefix,
 }: JifenRecordIndexProps) {
 	const router = useRouter();
 	const pathname = usePathname();
@@ -48,7 +48,11 @@ export default function JifenRecordIndex({
 	const formApiRef = useRef<FormApi | null>(null);
 	const filterFormApiRef = useRef<FormApi | null>(null);
 
-	const canAdd = hasPermission(permissions, `${permissionPrefix}:add`);
+	const { canAdd } = useMemo(() => {
+		return {
+			canAdd: hasPermission(permissions, `${PERMISSION_PREFIX}:add`),
+		};
+	}, [permissions]);
 
 	const queryFromUrl = parseQueryFromSearchParams(searchParams);
 	const { page: currentPage, pageSize } = queryFromUrl;

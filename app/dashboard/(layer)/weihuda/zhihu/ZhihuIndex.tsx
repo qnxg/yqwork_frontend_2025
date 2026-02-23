@@ -23,7 +23,7 @@ import {
 } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useRef, useState, useEffect, Suspense } from "react";
+import { useRef, useState, useEffect, Suspense, useMemo } from "react";
 import {
 	deleteZhihuByIdApi,
 	getZhihuUrlResolveApi,
@@ -99,6 +99,15 @@ export default function ZhihuIndex({
 	}, [payload.data]);
 
 	useRefreshOnSearchParamsChange(searchParams);
+
+	const { canAdd, canEdit, canDelete } = useMemo(() => {
+		const perms = payload.permissions;
+		return {
+			canAdd: hasPermission(perms, `${PERMISSION_PREFIX}:add`),
+			canEdit: hasPermission(perms, `${PERMISSION_PREFIX}:edit`),
+			canDelete: hasPermission(perms, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [payload.permissions]);
 
 	const handleFilter = () => {
 		if (!filterFormApi.current) return;
@@ -237,7 +246,7 @@ export default function ZhihuIndex({
 			fixed: "right" as const,
 			render: (_: unknown, record: IZhihu) => (
 				<Space>
-					{hasPermission(payload.permissions, `${PERMISSION_PREFIX}:edit`) && (
+					{canEdit && (
 						<Button
 							theme="light"
 							type="primary"
@@ -251,10 +260,7 @@ export default function ZhihuIndex({
 							编辑
 						</Button>
 					)}
-					{hasPermission(
-						payload.permissions,
-						`${PERMISSION_PREFIX}:delete`,
-					) && (
+					{canDelete && (
 						<Button
 							theme="light"
 							type="danger"
@@ -329,7 +335,7 @@ export default function ZhihuIndex({
 				</Space>
 			</Card>
 
-			{hasPermission(payload.permissions, `${PERMISSION_PREFIX}:add`) && (
+			{canAdd && (
 				<Button
 					theme="solid"
 					type="warning"

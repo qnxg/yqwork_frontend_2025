@@ -1,6 +1,6 @@
 import { getUserWhoAmI } from "@/api/qnxg/user";
 import { getDepartmentPageApi } from "@/api/qnxg/department";
-import ProfileClient from "./ProfileClient";
+import ProfileIndex from "./ProfileIndex";
 import { IUser } from "@/api/qnxg/user";
 import { IDepartment } from "@/api/qnxg/department";
 
@@ -18,5 +18,5 @@ export default async function ProfilePage() {
 		user: whoami.user,
 		departments,
 	};
-	return <ProfileClient payload={payload} />;
+	return <ProfileIndex payload={payload} />;
 }

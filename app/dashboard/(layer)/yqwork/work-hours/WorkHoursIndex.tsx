@@ -12,7 +12,7 @@ import { RequiredRule } from "@/utils/form";
 import { IconEdit, IconDelete, IconPlus } from "@douyinfe/semi-icons";
 import { Button, Modal, Space, Table, Form } from "@douyinfe/semi-ui-19";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { DateTimeRender, StatusRender } from "@/utils/table";
 import { WorkHourStatusOptions } from "@/config/fields";
@@ -54,6 +54,24 @@ export default function WorkHoursIndex({
 	const [showModify, setShowModify] = useState(false);
 	const [editingData, setEditingData] = useState<IWorkHours | null>(null);
 	const formApi = useRef<FormApi | null>(null);
+
+	const { canAdd, canEdit, canDelete, canCheckDepartment, canGenerateTable } =
+		useMemo(() => {
+			const perms = payload.permissions;
+			return {
+				canAdd: hasPermission(perms, `${PERMISSION_PREFIX}:add`),
+				canEdit: hasPermission(perms, `${PERMISSION_PREFIX}:edit`),
+				canDelete: hasPermission(perms, `${PERMISSION_PREFIX}:delete`),
+				canCheckDepartment: hasPermission(
+					perms,
+					`${PERMISSION_PREFIX}:checkDepartment`,
+				),
+				canGenerateTable: hasPermission(
+					perms,
+					`${PERMISSION_PREFIX}:generateTable`,
+				),
+			};
+		}, [payload.permissions]);
 
 	useRefreshOnSearchParamsChange(searchParams);
 
@@ -114,10 +132,7 @@ export default function WorkHoursIndex({
 						>
 							我的申报
 						</Button>
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:checkDepartment`,
-						) && (
+						{canCheckDepartment && (
 							<Button
 								theme="light"
 								type="primary"
@@ -133,10 +148,7 @@ export default function WorkHoursIndex({
 								审核
 							</Button>
 						)}
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:generateTable`,
-						) && (
+						{canGenerateTable && (
 							<Button
 								theme="light"
 								type="primary"
@@ -150,10 +162,7 @@ export default function WorkHoursIndex({
 								制作工资表
 							</Button>
 						)}
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:update`,
-						) && (
+						{canEdit && (
 							<Button
 								theme="light"
 								type="secondary"
@@ -167,10 +176,7 @@ export default function WorkHoursIndex({
 								编辑
 							</Button>
 						)}
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:delete`,
-						) && (
+						{canDelete && (
 							<Button
 								theme="light"
 								type="danger"
@@ -239,7 +245,7 @@ export default function WorkHoursIndex({
 
 	return (
 		<div>
-			{hasPermission(payload.permissions, `${PERMISSION_PREFIX}:add`) && (
+			{canAdd && (
 				<Button
 					theme="solid"
 					type="warning"

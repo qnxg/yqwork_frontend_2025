@@ -24,10 +24,6 @@ export default async function JifenRecordPage({
 	const permissions = whoami.permissions.map((p) => p.permission);
 
 	return (
-		<JifenRecordIndex
-			initialData={jifenRecordPage}
-			permissions={permissions}
-			permissionPrefix="hdwsh:jifenRecord"
-		/>
+		<JifenRecordIndex initialData={jifenRecordPage} permissions={permissions} />
 	);
 }

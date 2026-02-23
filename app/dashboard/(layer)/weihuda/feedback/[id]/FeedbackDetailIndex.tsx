@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
 	Button,
@@ -53,8 +53,12 @@ export default function FeedbackDetailIndex({
 	const [loading, setLoading] = useState("");
 	const replyFormApi = useRef<FormApi>(null);
 
-	const canEdit = hasPermission(permissions, `${PERMISSION_PREFIX}:edit`);
-	const canDelete = hasPermission(permissions, `${PERMISSION_PREFIX}:delete`);
+	const { canEdit, canDelete } = useMemo(() => {
+		return {
+			canEdit: hasPermission(permissions, `${PERMISSION_PREFIX}:edit`),
+			canDelete: hasPermission(permissions, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [permissions]);
 
 	const handleStatusChange = async (status: number) => {
 		if (!canEdit) return;

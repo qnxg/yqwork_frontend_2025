@@ -10,7 +10,7 @@ import {
 import { IconEdit, IconDelete, IconPlus } from "@douyinfe/semi-icons";
 import { Button, Modal, Space, Form, Table } from "@douyinfe/semi-ui-19";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { RequiredRule } from "@/utils/form";
 import { hasPermission } from "@/utils";
@@ -36,6 +36,15 @@ export default function DepartmentIndex({
 	const [editingData, setEditingData] = useState<IDepartment | null>(null);
 	const formApi = useRef<FormApi | null>(null);
 
+	const { canAdd, canEdit, canDelete } = useMemo(() => {
+		const perms = payload.permissions;
+		return {
+			canAdd: hasPermission(perms, `${PERMISSION_PREFIX}:add`),
+			canEdit: hasPermission(perms, `${PERMISSION_PREFIX}:edit`),
+			canDelete: hasPermission(perms, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [payload.permissions]);
+
 	const columns = [
 		{
 			title: "序号",
@@ -59,10 +68,7 @@ export default function DepartmentIndex({
 			render: (record: IDepartment) => {
 				return (
 					<Space>
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:update`,
-						) && (
+						{canEdit && (
 							<Button
 								theme="light"
 								type="secondary"
@@ -76,10 +82,7 @@ export default function DepartmentIndex({
 								编辑
 							</Button>
 						)}
-						{hasPermission(
-							payload.permissions,
-							`${PERMISSION_PREFIX}:delete`,
-						) && (
+						{canDelete && (
 							<Button
 								theme="light"
 								type="danger"
@@ -148,7 +151,7 @@ export default function DepartmentIndex({
 
 	return (
 		<div>
-			{hasPermission(payload.permissions, `${PERMISSION_PREFIX}:add`) && (
+			{canAdd && (
 				<Button
 					theme="solid"
 					type="warning"

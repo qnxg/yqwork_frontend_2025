@@ -12,11 +12,5 @@ export default async function JifenRulePage() {
 
 	const permissions = whoami.permissions.map((p) => p.permission);
 
-	return (
-		<JifenRuleIndex
-			initialRules={rules}
-			permissions={permissions}
-			permissionPrefix="hdwsh:jifenRule"
-		/>
-	);
+	return <JifenRuleIndex initialRules={rules} permissions={permissions} />;
 }

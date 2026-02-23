@@ -94,8 +94,8 @@ export default function RoleIndex({
 	const { canAdd, canEdit, canDelete } = useMemo(() => {
 		const perms = payload.userPermissions;
 		return {
-			canAdd: hasPermission(perms, `${PERMISSION_PREFIX}:post`),
-			canEdit: hasPermission(perms, `${PERMISSION_PREFIX}:update`),
+			canAdd: hasPermission(perms, `${PERMISSION_PREFIX}:add`),
+			canEdit: hasPermission(perms, `${PERMISSION_PREFIX}:edit`),
 			canDelete: hasPermission(perms, `${PERMISSION_PREFIX}:delete`),
 		};
 	}, [payload.userPermissions]);

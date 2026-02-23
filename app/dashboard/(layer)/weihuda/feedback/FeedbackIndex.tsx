@@ -13,7 +13,7 @@ import {
 import { IconDelete } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import {
 	deleteFeedbackByIdApi,
 	IFeedback,
@@ -78,6 +78,13 @@ export default function FeedbackIndex({
 	}, [payload.data]);
 
 	useRefreshOnSearchParamsChange(searchParams);
+
+	const { canDelete } = useMemo(() => {
+		const perms = payload.permissions;
+		return {
+			canDelete: hasPermission(perms, `${PERMISSION_PREFIX}:delete`),
+		};
+	}, [payload.permissions]);
 
 	const handleFilter = () => {
 		if (!filterFormApi.current) return;
@@ -193,10 +200,7 @@ export default function FeedbackIndex({
 					>
 						查看详情
 					</Button>
-					{hasPermission(
-						payload.permissions,
-						`${PERMISSION_PREFIX}:delete`,
-					) && (
+					{canDelete && (
 						<Button
 							theme="light"
 							type="danger"
