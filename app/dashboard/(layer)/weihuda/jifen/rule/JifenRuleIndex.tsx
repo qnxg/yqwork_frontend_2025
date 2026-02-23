@@ -3,7 +3,7 @@
 import { Button, Form, Modal, Space, Table } from "@douyinfe/semi-ui-19";
 import { IconDelete, IconEdit, IconPlus } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
 	deleteJifenRuleByIdApi,
@@ -33,12 +33,7 @@ export default function JifenRuleIndex({
 	permissions,
 }: JifenRuleIndexProps) {
 	const router = useRouter();
-	const [rules, setRules] = useState(initialRules.rows);
-
-	useEffect(() => {
-		setRules(initialRules.rows);
-	}, [initialRules.rows]);
-
+	const { rows: rules } = initialRules;
 	const [loading, setLoading] = useState("");
 	const [modalOpen, setModalOpen] = useState(false);
 	const [editing, setEditing] = useState<IJifenRule | null>(null);

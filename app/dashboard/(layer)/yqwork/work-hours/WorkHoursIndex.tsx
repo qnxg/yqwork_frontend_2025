@@ -12,7 +12,7 @@ import { RequiredRule } from "@/utils/form";
 import { IconEdit, IconDelete, IconPlus } from "@douyinfe/semi-icons";
 import { Button, Modal, Space, Table, Form } from "@douyinfe/semi-ui-19";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { DateTimeRender, StatusRender } from "@/utils/table";
 import { WorkHourStatusOptions } from "@/config/fields";
@@ -81,8 +81,13 @@ export default function WorkHoursIndex({
 		const next = new URLSearchParams();
 		next.set("page", String(newPage));
 		next.set("pageSize", String(newPageSize));
+		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
+
+	useEffect(() => {
+		setLoading((prev) => (prev === "table" ? "" : prev));
+	}, [payload.list]);
 
 	const columns = [
 		{

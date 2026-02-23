@@ -16,7 +16,6 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
 	deleteGoodsRecordByIdApi,
 	getGoodsReceiveApi,
-	getGoodsRecordPageApi,
 	type IGoodsRecord,
 	type IGoodsRecordPageResponseData,
 	type IGoodsRecordPageQueryData,
@@ -50,7 +49,7 @@ function parseQueryFromSearchParams(
 const PERMISSION_PREFIX = "hdwsh:goodsRecord";
 
 export default function JifenExchangeIndex({
-	initialData,
+	initialData: data,
 	goodsList,
 	permissions,
 }: JifenExchangeIndexProps) {
@@ -58,13 +57,11 @@ export default function JifenExchangeIndex({
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const [loading, setLoading] = useState("");
-	const [data, setData] = useState(initialData);
 	const filterFormApiRef = useRef<FormApi | null>(null);
 
 	useEffect(() => {
-		setData(initialData);
 		setLoading((prev) => (prev === "table" ? "" : prev));
-	}, [initialData]);
+	}, [data]);
 
 	const { canEdit, canDelete } = useMemo(() => {
 		return {
@@ -81,37 +78,18 @@ export default function JifenExchangeIndex({
 
 	const updateSearchParams = (params: Partial<IGoodsRecordPageQueryData>) => {
 		const next = new URLSearchParams(searchParams.toString());
-		if (params.page != null) next.set("page", String(params.page));
-		if (params.pageSize != null) next.set("pageSize", String(params.pageSize));
-		if ("stuId" in params) {
-			if (params.stuId) next.set("stuId", params.stuId);
-			else next.delete("stuId");
-		}
-		if ("goodsId" in params) {
-			if (params.goodsId != null) next.set("goodsId", String(params.goodsId));
-			else next.delete("goodsId");
-		}
-		if ("status" in params) {
-			if (params.status != null) next.set("status", String(params.status));
-			else next.delete("status");
-		}
-		router.push(`${pathname}?${next.toString()}`, { scroll: false });
-	};
-
-	const refreshData = async () => {
+		if (params.page) next.set("page", String(params.page));
+		if (params.pageSize) next.set("pageSize", String(params.pageSize));
+		if (params.stuId) next.set("stuId", params.stuId);
+		if (params.goodsId) next.set("goodsId", String(params.goodsId));
+		if (params.status) next.set("status", String(params.status));
 		setLoading("table");
-		try {
-			const res = await getGoodsRecordPageApi(queryFromUrl);
-			setData(res);
-		} finally {
-			setLoading("");
-		}
+		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
 
 	const handleFilter = () => {
 		if (!filterFormApiRef.current) return;
 		const values = filterFormApiRef.current.getValues();
-		setLoading("table");
 		updateSearchParams({
 			page: 1,
 			pageSize: queryFromUrl.pageSize,
@@ -127,7 +105,6 @@ export default function JifenExchangeIndex({
 	const handleReset = () => {
 		if (!filterFormApiRef.current) return;
 		filterFormApiRef.current.reset();
-		setLoading("table");
 		updateSearchParams({
 			page: 1,
 			pageSize: 10,
@@ -157,7 +134,6 @@ export default function JifenExchangeIndex({
 				try {
 					await withToast(() => deleteGoodsRecordByIdApi(id), "删除成功");
 					router.refresh();
-					await refreshData();
 				} catch (err) {
 					throw err;
 				} finally {

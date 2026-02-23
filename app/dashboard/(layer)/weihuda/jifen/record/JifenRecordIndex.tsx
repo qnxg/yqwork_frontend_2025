@@ -35,7 +35,7 @@ function parseQueryFromSearchParams(
 const PERMISSION_PREFIX = "hdwsh:jifenRecord";
 
 export default function JifenRecordIndex({
-	initialData,
+	initialData: data,
 	permissions,
 }: JifenRecordIndexProps) {
 	const router = useRouter();
@@ -43,7 +43,6 @@ export default function JifenRecordIndex({
 	const searchParams = useSearchParams();
 	const [loading, setLoading] = useState("");
 	const [modalOpen, setModalOpen] = useState(false);
-	const [data, setData] = useState(initialData);
 	const formApiRef = useRef<FormApi | null>(null);
 	const filterFormApiRef = useRef<FormApi | null>(null);
 
@@ -59,33 +58,23 @@ export default function JifenRecordIndex({
 
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
-		setData(initialData);
 		setLoading((prev) => (prev === "table" ? "" : prev));
-	}, [initialData]);
+	}, [data]);
 
 	const updateSearchParams = (params: IJifenRecordPageQueryData) => {
 		const next = new URLSearchParams(searchParams.toString());
 		if (params.page) next.set("page", String(params.page));
 		if (params.pageSize) next.set("pageSize", String(params.pageSize));
-		if (params.key != null) {
-			if (params.key) next.set("key", params.key);
-			else next.delete("key");
-		}
-		if (params.param != null) {
-			if (params.param) next.set("param", params.param);
-			else next.delete("param");
-		}
-		if (params.stuId != null) {
-			if (params.stuId) next.set("stuId", params.stuId);
-			else next.delete("stuId");
-		}
+		if (params.key) next.set("key", params.key);
+		if (params.param) next.set("param", params.param);
+		if (params.stuId) next.set("stuId", params.stuId);
+		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
 
 	const handleFilter = () => {
 		if (!filterFormApiRef.current) return;
 		const values = filterFormApiRef.current.getValues();
-		setLoading("table");
 		updateSearchParams({
 			page: 1,
 			pageSize,
@@ -98,7 +87,6 @@ export default function JifenRecordIndex({
 	const handleReset = () => {
 		if (!filterFormApiRef.current) return;
 		filterFormApiRef.current.reset();
-		setLoading("table");
 		updateSearchParams({
 			page: 1,
 			pageSize: 10,

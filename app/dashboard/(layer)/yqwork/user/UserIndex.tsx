@@ -67,7 +67,6 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
-	console.log("searchParams", searchParams.toString());
 	const [loading, setLoading] = useState("");
 
 	const { canAdd, canEdit, canDelete } = useMemo(() => {
@@ -104,7 +103,8 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 		if (params.name) next.set("name", params.name);
 		if (params.departmentId)
 			next.set("departmentId", String(params.departmentId));
-		if (params.status !== undefined) next.set("status", String(params.status));
+		if (params.status) next.set("status", String(params.status));
+		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
 
@@ -117,7 +117,6 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 	const handleFilter = () => {
 		if (!filterFormApi.current) return;
 		const values = filterFormApi.current.getValues();
-		setLoading("table");
 		updateSearchParams({
 			page: 1,
 			pageSize,
@@ -131,7 +130,6 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 	// 处理重置
 	const handleReset = () => {
 		filterFormApi.current?.reset();
-		setLoading("table");
 		updateSearchParams({ page: 1, pageSize: 10 });
 	};
 

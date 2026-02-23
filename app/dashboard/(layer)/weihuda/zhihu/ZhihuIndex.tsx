@@ -90,6 +90,7 @@ export default function ZhihuIndex({
 		if (params.tags) next.set("tags", params.tags);
 		if (params.status !== undefined) next.set("status", String(params.status));
 		if (params.stuId) next.set("stuId", params.stuId);
+		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
 
@@ -109,7 +110,6 @@ export default function ZhihuIndex({
 	const handleFilter = () => {
 		if (!filterFormApi.current) return;
 		const values = filterFormApi.current.getValues();
-		setLoading("table");
 		updateSearchParams({
 			page: 1,
 			pageSize,
@@ -123,7 +123,6 @@ export default function ZhihuIndex({
 	const handleReset = () => {
 		if (!filterFormApi.current) return;
 		filterFormApi.current.reset();
-		setLoading("table");
 		updateSearchParams({ page: 1, pageSize: 10 });
 	};
 

@@ -62,6 +62,7 @@ export default function AnnouncementIndex({
 		const next = new URLSearchParams();
 		if (params.page) next.set("page", String(params.page));
 		if (params.pageSize) next.set("pageSize", String(params.pageSize));
+		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
 

@@ -13,7 +13,7 @@ import {
 } from "@douyinfe/semi-ui-19";
 import { IconDelete, IconEdit, IconPlus } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
 	deleteJifenGoodsByIdApi,
@@ -41,16 +41,10 @@ const ENABLED_OPTIONS = [
 const PERMISSION_PREFIX = "hdwsh:jifenGoods";
 
 export default function JifenGoodsIndex({
-	initialGoods,
+	initialGoods: goods,
 	permissions,
 }: JifenGoodsIndexProps) {
 	const router = useRouter();
-	const [goods, setGoods] = useState(initialGoods);
-
-	useEffect(() => {
-		setGoods(initialGoods);
-		setLoading((prev) => (prev === "table" ? "" : prev));
-	}, [initialGoods]);
 
 	const [loading, setLoading] = useState("");
 	const [modalOpen, setModalOpen] = useState(false);

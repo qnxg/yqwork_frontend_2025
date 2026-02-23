@@ -66,9 +66,10 @@ export default function FeedbackIndex({
 		if (params.page) next.set("page", String(params.page));
 		if (params.pageSize) next.set("pageSize", String(params.pageSize));
 		if (params.stuId) next.set("stuId", params.stuId);
-		if (params.status !== undefined) next.set("status", String(params.status));
+		if (params.status) next.set("status", String(params.status));
 		if (params.from) next.set("from", params.from);
 		if (params.to) next.set("to", params.to);
+		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
 
