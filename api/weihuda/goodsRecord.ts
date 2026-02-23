@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerAxios } from "@/lib/request";
+import { createServerAxios } from "@/utils/request";
 import { IPageQueryData } from "../interface";
 
 export interface IGoodsRecord {

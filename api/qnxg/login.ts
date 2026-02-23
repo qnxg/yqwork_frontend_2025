@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerAxios } from "@/lib/request";
+import { createServerAxios } from "@/utils/request";
 
 /**
  * 登录

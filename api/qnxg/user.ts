@@ -1,6 +1,6 @@
 "use server";
 
-import { createServerAxios } from "@/lib/request";
+import { createServerAxios } from "@/utils/request";
 import { IPageQueryData } from "../interface";
 import { IPermission } from "./permission";
 import { IRole } from "./role";

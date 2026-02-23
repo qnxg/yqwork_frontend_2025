@@ -1,6 +1,8 @@
 import { IWorkHoursRecord } from "@/api/qnxg/workHoursRecord";
 import { API_URL_REMOTE, WAGE_PER_HOUR } from "@/config";
 import { NavItem, RouteTableItem } from "@/config/nav";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export const clone = <T>(obj: T) => {
 	return JSON.parse(JSON.stringify(obj)) as T;
@@ -84,3 +86,10 @@ export const decodeProxyUrl = (url: string) => {
 	const decodedUrl = decodeURIComponent(originUrl);
 	return decodedUrl;
 };
+
+/**
+ * Shadcn UI 用到的函数
+ */
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
