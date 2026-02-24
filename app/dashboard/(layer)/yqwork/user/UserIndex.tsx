@@ -470,7 +470,6 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 								field="name"
 								label="姓名"
 								rules={[RequiredRule]}
-								disabled={currentUser !== null}
 								placeholder="请输入姓名"
 							/>
 						</Col>
@@ -479,7 +478,6 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 								field="stuId"
 								label="学号"
 								rules={[RequiredRule]}
-								disabled={currentUser !== null}
 								placeholder="请输入学号"
 							/>
 						</Col>
