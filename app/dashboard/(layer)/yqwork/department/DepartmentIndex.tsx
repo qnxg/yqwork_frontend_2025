@@ -102,7 +102,7 @@ export default function DepartmentIndex({
 
 	const handleAdd = async () => {
 		if (!formApi.current) return;
-		setLoading("add");
+		setLoading("submit");
 		try {
 			const values =
 				(await formApi.current!.validate()) as IDepartmentBasicInfo;
@@ -115,7 +115,7 @@ export default function DepartmentIndex({
 
 	const handleModify = async () => {
 		if (!formApi.current || !editingData) return;
-		setLoading("update");
+		setLoading("submit");
 		try {
 			const values =
 				(await formApi.current!.validate()) as IDepartmentBasicInfo;
@@ -178,7 +178,7 @@ export default function DepartmentIndex({
 				}}
 				okText={showModify ? "修改" : "添加"}
 				cancelText={"取消"}
-				confirmLoading={loading === "add" || loading === "update"}
+				confirmLoading={loading === "submit"}
 			>
 				<Form
 					getFormApi={(api) => (formApi.current = api)}

@@ -198,7 +198,7 @@ export default function WorkHoursIndex({
 
 	const handleAdd = async () => {
 		if (!formApi.current) return;
-		setLoading("add");
+		setLoading("submit");
 		try {
 			const values = (await formApi.current!.validate()) as IWorkHoursBasicInfo;
 			values.endTime = dayjs(values.endTime).format("YYYY-MM-DD HH:mm");
@@ -211,7 +211,7 @@ export default function WorkHoursIndex({
 
 	const handleModify = async () => {
 		if (!formApi.current || !editingData) return;
-		setLoading("update");
+		setLoading("submit");
 		try {
 			const values = (await formApi.current!.validate()) as IWorkHoursBasicInfo;
 			values.endTime = dayjs(values.endTime).format("YYYY-MM-DD HH:mm");
@@ -281,7 +281,7 @@ export default function WorkHoursIndex({
 				}}
 				okText={showModify ? "修改" : "添加"}
 				cancelText={"取消"}
-				confirmLoading={loading === "add" || loading === "update"}
+				confirmLoading={loading === "submit"}
 			>
 				<Form
 					getFormApi={(api) => (formApi.current = api)}

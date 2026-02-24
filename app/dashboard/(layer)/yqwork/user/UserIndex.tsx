@@ -136,7 +136,7 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 	// 处理添加用户
 	const handleAdd = async () => {
 		if (!formApi.current) return;
-		setLoading("add");
+		setLoading("submit");
 		try {
 			const values = (await formApi.current.validate()) as IUserPostData;
 			await withToast(() => postUserApi(values), "添加用户成功");
@@ -149,7 +149,7 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 	// 处理编辑用户
 	const handleEdit = async () => {
 		if (!formApi.current || !currentUser) return;
-		setLoading("edit");
+		setLoading("submit");
 		try {
 			const values = (await formApi.current!.validate()) as IUserPutData;
 			await withToast(
@@ -447,7 +447,7 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 				onCancel={() => setShowDialog(false)}
 				okText={currentUser ? "编辑" : "添加"}
 				cancelText="取消"
-				confirmLoading={loading === "add"}
+				confirmLoading={loading === "submit"}
 				width={700}
 			>
 				<Form

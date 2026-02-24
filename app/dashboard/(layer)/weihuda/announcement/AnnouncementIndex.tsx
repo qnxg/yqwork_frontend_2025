@@ -161,7 +161,7 @@ export default function AnnouncementIndex({
 
 	const handleAdd = async () => {
 		if (!formApi.current) return;
-		setLoading("add");
+		setLoading("submit");
 		try {
 			const values =
 				(await formApi.current.validate()) as IAnnouncementBasicInfo;
@@ -174,7 +174,7 @@ export default function AnnouncementIndex({
 
 	const handleModify = async () => {
 		if (!formApi.current || !editingData) return;
-		setLoading("update");
+		setLoading("submit");
 		try {
 			const values =
 				(await formApi.current.validate()) as IAnnouncementBasicInfo;
@@ -251,7 +251,7 @@ export default function AnnouncementIndex({
 				}}
 				okText={showModify ? "保存" : "添加"}
 				cancelText="取消"
-				confirmLoading={loading === "add" || loading === "update"}
+				confirmLoading={loading === "submit"}
 				width={520}
 			>
 				<Form
