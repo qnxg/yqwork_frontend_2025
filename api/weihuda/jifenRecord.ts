@@ -63,3 +63,18 @@ export async function getJifenRecordByIdApi(id: number) {
 	const data: IJifenRecord = await r.get(`/jifen-record/${id}`);
 	return data;
 }
+
+export interface IAddRecordBatchItem {
+	stuId: string;
+	delta: number;
+	desc: string;
+}
+
+/**
+ * 新增积分记录批量
+ */
+export async function postJifenRecordBatchApi(items: IAddRecordBatchItem[]) {
+	const r = await createServerAxios();
+	const data: void = await r.post("/jifen-record/batch", items);
+	return data;
+}

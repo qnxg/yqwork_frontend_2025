@@ -1,12 +1,22 @@
 "use client";
 
-import { Button, Card, Form, Modal, Space, Table } from "@douyinfe/semi-ui-19";
+import {
+	Button,
+	Card,
+	Form,
+	Modal,
+	Space,
+	Table,
+	Toast,
+} from "@douyinfe/semi-ui-19";
 import { IconPlus } from "@douyinfe/semi-icons";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
 import { useRef, useState, useEffect, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
 	postJifenRecordApi,
+	postJifenRecordBatchApi,
+	type IAddRecordBatchItem,
 	type IJifenRecordPageResponseData,
 	type IJifenRecordPageQueryData,
 } from "@/api/weihuda/jifenRecord";
@@ -32,6 +42,30 @@ function parseQueryFromSearchParams(
 	};
 }
 
+function parseBatchText(text: string): IAddRecordBatchItem[] | string {
+	const lines = text
+		.split(/\n/)
+		.map((s) => s.trim())
+		.filter(Boolean);
+	const items: IAddRecordBatchItem[] = [];
+	for (let i = 0; i < lines.length; i++) {
+		const parts = lines[i].split(/\s+/);
+		if (parts.length < 3) {
+			return `第 ${i + 1} 行格式错误：每行需用空格分割为三部分（学号、积分数量、描述）`;
+		}
+		const deltaNum = Number(parts[1]);
+		if (!Number.isInteger(deltaNum) || Number.isNaN(deltaNum)) {
+			return `第 ${i + 1} 行格式错误：积分数量必须是整数`;
+		}
+		items.push({
+			stuId: parts[0],
+			delta: deltaNum,
+			desc: parts.slice(2).join(" "),
+		});
+	}
+	return items;
+}
+
 const PERMISSION_PREFIX = "hdwsh:jifenRecord";
 
 export default function JifenRecordIndex({
@@ -43,7 +77,9 @@ export default function JifenRecordIndex({
 	const searchParams = useSearchParams();
 	const [loading, setLoading] = useState("");
 	const [modalOpen, setModalOpen] = useState(false);
+	const [batchModalOpen, setBatchModalOpen] = useState(false);
 	const formApiRef = useRef<FormApi | null>(null);
+	const batchFormApiRef = useRef<FormApi | null>(null);
 	const filterFormApiRef = useRef<FormApi | null>(null);
 
 	const { canAdd } = useMemo(() => {
@@ -57,7 +93,6 @@ export default function JifenRecordIndex({
 	const { rows, count: total } = data;
 
 	useEffect(() => {
-		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setLoading((prev) => (prev === "table" ? "" : prev));
 	}, [data]);
 
@@ -96,7 +131,6 @@ export default function JifenRecordIndex({
 		});
 	};
 
-	const handleOpenAddModal = () => setModalOpen(true);
 	const handleCloseModal = () => {
 		setModalOpen(false);
 		formApiRef.current?.reset();
@@ -120,6 +154,47 @@ export default function JifenRecordIndex({
 			router.refresh();
 		} catch {}
 		setLoading("");
+	};
+
+	const handleCloseBatchModal = () => {
+		setBatchModalOpen(false);
+		batchFormApiRef.current?.reset();
+	};
+
+	const handleSubmitBatch = async () => {
+		if (!batchFormApiRef.current) return;
+		const values = await batchFormApiRef.current.validate();
+		const text = (values.batchText as string) ?? "";
+		const parseResult = parseBatchText(text);
+		if (typeof parseResult === "string") {
+			Toast.error(parseResult);
+			throw new Error();
+		}
+		if (parseResult.length === 0) {
+			Toast.error("请至少输入一行有效记录");
+			throw new Error();
+		}
+		Modal.confirm({
+			title: "确认批量添加",
+			content: `将要添加 ${parseResult.length} 个积分记录，是否继续？`,
+			okText: "确定",
+			cancelText: "取消",
+			onOk: async () => {
+				setLoading("submit");
+				try {
+					await withToast(
+						() => postJifenRecordBatchApi(parseResult),
+						"批量添加成功",
+					);
+					handleCloseBatchModal();
+					router.refresh();
+				} catch (err) {
+					throw err;
+				} finally {
+					setLoading("");
+				}
+			},
+		});
 	};
 
 	const columns = [
@@ -192,15 +267,23 @@ export default function JifenRecordIndex({
 			</Card>
 
 			{canAdd && (
-				<Button
-					theme="solid"
-					type="warning"
-					className="mb-4"
-					icon={<IconPlus />}
-					onClick={handleOpenAddModal}
-				>
-					新增
-				</Button>
+				<Space className="mb-4" wrap>
+					<Button
+						theme="solid"
+						type="warning"
+						icon={<IconPlus />}
+						onClick={() => setModalOpen(true)}
+					>
+						新增
+					</Button>
+					<Button
+						theme="solid"
+						type="tertiary"
+						onClick={() => setBatchModalOpen(true)}
+					>
+						批量添加
+					</Button>
+				</Space>
 			)}
 
 			<Table
@@ -254,6 +337,31 @@ export default function JifenRecordIndex({
 						label="积分"
 						placeholder="请输入积分（可正可负）"
 						type="number"
+						rules={[RequiredRule]}
+					/>
+				</Form>
+			</Modal>
+
+			<Modal
+				title="批量添加积分记录"
+				visible={batchModalOpen}
+				onCancel={handleCloseBatchModal}
+				onOk={handleSubmitBatch}
+				okText="提交"
+				cancelText="取消"
+				confirmLoading={loading === "submit"}
+			>
+				<Form
+					getFormApi={(api) => (batchFormApiRef.current = api)}
+					labelPosition="top"
+				>
+					<Form.TextArea
+						field="batchText"
+						label="批量数据"
+						placeholder={
+							"每行一条记录，用空格分割三部分：学号 添加积分数量 描述\n例如：\n202402050201 5 问题反馈奖励"
+						}
+						rows={10}
 						rules={[RequiredRule]}
 					/>
 				</Form>
