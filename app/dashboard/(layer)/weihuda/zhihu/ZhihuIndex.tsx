@@ -88,7 +88,8 @@ export default function ZhihuIndex({
 		if (params.pageSize) next.set("pageSize", String(params.pageSize));
 		if (params.title) next.set("title", params.title);
 		if (params.tags) next.set("tags", params.tags);
-		if (params.status !== undefined) next.set("status", String(params.status));
+		if (params.status !== undefined && params.status !== null)
+			next.set("status", String(params.status));
 		if (params.stuId) next.set("stuId", params.stuId);
 		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
@@ -115,7 +116,7 @@ export default function ZhihuIndex({
 			pageSize,
 			title: values.title?.trim() || undefined,
 			tags: (values.tags as string)?.trim() || undefined,
-			status: values.status ?? undefined,
+			status: values.status,
 			stuId: values.stuId?.trim() || undefined,
 		});
 	};
@@ -284,7 +285,7 @@ export default function ZhihuIndex({
 					initValues={{
 						title: queryFromUrl.title ?? "",
 						tags: queryFromUrl.tags ?? "",
-						status: queryFromUrl.status ?? undefined,
+						status: queryFromUrl.status,
 						stuId: queryFromUrl.stuId ?? "",
 					}}
 				>

@@ -81,8 +81,10 @@ export default function JifenExchangeIndex({
 		if (params.page) next.set("page", String(params.page));
 		if (params.pageSize) next.set("pageSize", String(params.pageSize));
 		if (params.stuId) next.set("stuId", params.stuId);
-		if (params.goodsId) next.set("goodsId", String(params.goodsId));
-		if (params.status) next.set("status", String(params.status));
+		if (params.goodsId !== undefined && params.goodsId !== null)
+			next.set("goodsId", String(params.goodsId));
+		if (params.status !== undefined && params.status !== null)
+			next.set("status", String(params.status));
 		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
@@ -94,11 +96,9 @@ export default function JifenExchangeIndex({
 			page: 1,
 			pageSize: queryFromUrl.pageSize,
 			stuId: (values.stuId as string)?.trim() || undefined,
-			goodsId: values.goodsId != null ? Number(values.goodsId) : undefined,
-			status:
-				values.status !== undefined && values.status !== null
-					? Number(values.status)
-					: undefined,
+			goodsId:
+				values.goodsId !== undefined ? Number(values.goodsId) : undefined,
+			status: values.status,
 		});
 	};
 
@@ -108,9 +108,6 @@ export default function JifenExchangeIndex({
 		updateSearchParams({
 			page: 1,
 			pageSize: 10,
-			stuId: undefined,
-			goodsId: undefined,
-			status: undefined,
 		});
 	};
 
@@ -237,8 +234,8 @@ export default function JifenExchangeIndex({
 					getFormApi={(api) => (filterFormApiRef.current = api)}
 					initValues={{
 						stuId: queryFromUrl.stuId ?? "",
-						goodsId: queryFromUrl.goodsId ?? undefined,
-						status: queryFromUrl.status ?? undefined,
+						goodsId: queryFromUrl.goodsId,
+						status: queryFromUrl.status,
 					}}
 				>
 					<Space wrap className="mb-4">

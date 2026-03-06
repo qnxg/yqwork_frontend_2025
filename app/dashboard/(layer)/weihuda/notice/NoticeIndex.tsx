@@ -105,7 +105,7 @@ export default function NoticeIndex({
 			page: 1,
 			pageSize,
 			stuId: values.stuId?.trim() || undefined,
-			status: values.status ?? undefined,
+			status: values.status,
 			from: fromDate
 				? dayjs(fromDate).format("YYYY-MM-DD 00:00:00")
 				: undefined,
@@ -266,7 +266,7 @@ export default function NoticeIndex({
 					}}
 					initValues={{
 						stuId: queryFromUrl.stuId ?? "",
-						status: queryFromUrl.status ?? undefined,
+						status: queryFromUrl.status,
 						from: queryFromUrl.from ? new Date(queryFromUrl.from) : undefined,
 						to: queryFromUrl.to ? new Date(queryFromUrl.to) : undefined,
 					}}

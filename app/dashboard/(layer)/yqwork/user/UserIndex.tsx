@@ -103,7 +103,8 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 		if (params.name) next.set("name", params.name);
 		if (params.departmentId)
 			next.set("departmentId", String(params.departmentId));
-		if (params.status) next.set("status", String(params.status));
+		if (params.status !== undefined && params.status !== null)
+			next.set("status", String(params.status));
 		setLoading("table");
 		router.push(`${pathname}?${next.toString()}`, { scroll: false });
 	};
@@ -120,10 +121,10 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 		updateSearchParams({
 			page: 1,
 			pageSize,
-			stuId: values.学号?.trim() || undefined,
-			name: values.姓名?.trim() || undefined,
-			departmentId: values.部门 || undefined,
-			status: values.在岗状态 ?? undefined,
+			stuId: values.stuId?.trim() || undefined,
+			name: values.name?.trim() || undefined,
+			departmentId: values.departmentId || undefined,
+			status: values.status,
 		});
 	};
 
@@ -354,32 +355,36 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 				<Form
 					getFormApi={(api) => (filterFormApi.current = api)}
 					initValues={{
-						学号: queryFromUrl.stuId ?? "",
-						姓名: queryFromUrl.name ?? "",
-						部门: queryFromUrl.departmentId ?? undefined,
-						在岗状态: queryFromUrl.status ?? undefined,
+						stuId: queryFromUrl.stuId ?? "",
+						name: queryFromUrl.name ?? "",
+						departmentId: queryFromUrl.departmentId ?? undefined,
+						status: queryFromUrl.status,
 					}}
 				>
 					<Space wrap className="mb-4">
 						<Form.Input
-							field="学号"
+							field="stuId"
+							label="学号"
 							placeholder="请输入学号"
 							className="w-48"
 						/>
 						<Form.Input
-							field="姓名"
+							field="name"
+							label="姓名"
 							placeholder="请输入姓名"
 							className="w-48"
 						/>
 						<Form.Select
-							field="部门"
+							field="departmentId"
+							label="部门"
 							placeholder="请选择部门"
 							optionList={departmentOptions}
 							showClear
 							className="w-64"
 						/>
 						<Form.Select
-							field="在岗状态"
+							field="status"
+							label="在岗状态"
 							placeholder="请选择在岗状态"
 							optionList={UserStatusOptions}
 							showClear

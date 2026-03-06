@@ -66,7 +66,8 @@ export default function FeedbackIndex({
 		if (params.page) next.set("page", String(params.page));
 		if (params.pageSize) next.set("pageSize", String(params.pageSize));
 		if (params.stuId) next.set("stuId", params.stuId);
-		if (params.status) next.set("status", String(params.status));
+		if (params.status !== undefined && params.status !== null)
+			next.set("status", String(params.status));
 		if (params.from) next.set("from", params.from);
 		if (params.to) next.set("to", params.to);
 		setLoading("table");
@@ -94,7 +95,7 @@ export default function FeedbackIndex({
 			page: 1,
 			pageSize,
 			stuId: values.stuId?.trim() || undefined,
-			status: values.status ?? undefined,
+			status: values.status,
 			from: fromDate
 				? dayjs(fromDate).format("YYYY-MM-DD 00:00:00")
 				: undefined,
@@ -222,12 +223,10 @@ export default function FeedbackIndex({
 				<Form
 					getFormApi={(api) => (filterFormApi.current = api)}
 					initValues={{
-						学号: queryFromUrl.stuId ?? "",
-						状态: queryFromUrl.status ?? undefined,
-						开始时间: queryFromUrl.from
-							? new Date(queryFromUrl.from)
-							: undefined,
-						结束时间: queryFromUrl.to ? new Date(queryFromUrl.to) : undefined,
+						stuId: queryFromUrl.stuId ?? "",
+						status: queryFromUrl.status,
+						from: queryFromUrl.from ? new Date(queryFromUrl.from) : undefined,
+						to: queryFromUrl.to ? new Date(queryFromUrl.to) : undefined,
 					}}
 				>
 					<Space wrap className="mb-4">
