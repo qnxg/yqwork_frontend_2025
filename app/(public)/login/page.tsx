@@ -57,6 +57,8 @@ function PasswordLogin({
 }) {
 	const router = useRouter();
 	const form = useRef<FormApi>(null);
+	const passwordInputRef = useRef<HTMLInputElement>(null);
+
 	const [loading, setLoading] = useState(false);
 	const [isRedirecting, setIsRedirecting] = useState(false);
 
@@ -80,8 +82,31 @@ function PasswordLogin({
 		}
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+	const handleUsernameInputKeyDown = (
+		e: React.KeyboardEvent<HTMLInputElement>,
+	) => {
+		// 忽略除回车以外的按键；且若表单未初始化，不拦截事件
+		if (e.key !== "Enter" || !form.current) return;
+
+		// 未输入学号时，不应响应回车
+		if (!form.current.getValue("username")) {
+			e.preventDefault();
+			e.stopPropagation();
+			return;
+		}
+
+		// 未输入密码时，回车应将焦点转移至密码输入框而不是触发表单提交
+		if (!form.current.getValue("password")) {
+			e.preventDefault();
+			e.stopPropagation();
+			passwordInputRef.current?.focus();
+			return;
+		}
+	};
+
+	const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
 		if (e.key === "Enter") {
+			e.preventDefault();
 			form.current?.submitForm();
 		}
 	};
@@ -90,10 +115,17 @@ function PasswordLogin({
 		<>
 			<Form
 				getFormApi={(api) => (form.current = api)}
-				onKeyDown={handleKeyDown}
+				onKeyDown={handleFormKeyDown}
+				onSubmit={() => handleLogin()}
 			>
-				<Form.Input label="学号" field="username" rules={[RequiredRule]} />
 				<Form.Input
+					label="学号"
+					field="username"
+					rules={[RequiredRule]}
+					onKeyDown={handleUsernameInputKeyDown}
+				/>
+				<Form.Input
+					ref={passwordInputRef}
 					label="密码"
 					field="password"
 					rules={[RequiredRule]}
@@ -103,7 +135,7 @@ function PasswordLogin({
 			<div className="mt-4">
 				<Button
 					icon={<IconSendStroked />}
-					onClick={handleLogin}
+					onClick={() => form.current?.submitForm()}
 					loading={loading || isRedirecting}
 				>
 					{isRedirecting ? "正在跳转…" : "登录"}
