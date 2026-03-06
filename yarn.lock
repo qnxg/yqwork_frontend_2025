@@ -7084,6 +7084,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nextjs-toploader@npm:^3.9.17":
+  version: 3.9.17
+  resolution: "nextjs-toploader@npm:3.9.17"
+  dependencies:
+    nprogress: "npm:^0.2.0"
+    prop-types: "npm:^15.8.1"
+  peerDependencies:
+    next: ">= 6.0.0"
+    react: ">= 16.0.0"
+    react-dom: ">= 16.0.0"
+  checksum: 10c0/5899c0ad26fcd5241de075c773c320c98b3c59b1132164e5b9350262018225fc1d34af51cb2859ccd3c16f9f2434f46fb25dc6b54a1bd173350f0e56bac2b41d
+  languageName: node
+  linkType: hard
+
 "node-gyp@npm:latest":
   version: 12.2.0
   resolution: "node-gyp@npm:12.2.0"
@@ -7126,6 +7140,13 @@ __metadata:
   version: 3.0.0
   resolution: "normalize-path@npm:3.0.0"
   checksum: 10c0/e008c8142bcc335b5e38cf0d63cfd39d6cf2d97480af9abdbe9a439221fd4d749763bab492a8ee708ce7a194bb00c9da6d0a115018672310850489137b3da046
+  languageName: node
+  linkType: hard
+
+"nprogress@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "nprogress@npm:0.2.0"
+  checksum: 10c0/eab9a923a1ad1eed71a455ecfbc358442dd9bcd71b9fa3fa1c67eddf5159360b182c218f76fca320c97541a1b45e19ced04e6dcb044a662244c5419f8ae9e821
   languageName: node
   linkType: hard
 
@@ -9983,6 +10004,7 @@ __metadata:
     exceljs: "npm:^4.4.0"
     lucide-react: "npm:^0.563.0"
     next: "npm:16.1.6"
+    nextjs-toploader: "npm:^3.9.17"
     postcss: "npm:^8.5.6"
     prettier: "npm:3.8.1"
     qrcode: "npm:^1.5.4"
