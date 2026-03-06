@@ -79,9 +79,19 @@ function PasswordLogin({
 			setIsRedirecting(false);
 		}
 	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+		if (e.key === "Enter") {
+			form.current?.submitForm();
+		}
+	};
+
 	return (
 		<>
-			<Form getFormApi={(api) => (form.current = api)}>
+			<Form
+				getFormApi={(api) => (form.current = api)}
+				onKeyDown={handleKeyDown}
+			>
 				<Form.Input label="学号" field="username" rules={[RequiredRule]} />
 				<Form.Input
 					label="密码"
