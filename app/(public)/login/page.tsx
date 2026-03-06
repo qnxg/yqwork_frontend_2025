@@ -58,6 +58,8 @@ function PasswordLogin({
 	const router = useRouter();
 	const form = useRef<FormApi>(null);
 	const [loading, setLoading] = useState(false);
+	const [isRedirecting, setIsRedirecting] = useState(false);
+
 	const handleLogin = async () => {
 		if (!form.current) return;
 		setLoading(true);
@@ -65,12 +67,17 @@ function PasswordLogin({
 			const { username, password } = await form.current!.validate();
 			const token = await withToast(
 				() => postLoginApi(username, password),
-				"登录成功",
+				"登录成功，请稍待页面加载……",
 			);
+			// 登录成功后到跳转首页的时间段，应保持登录按钮不可用
+			// 否则登录按钮会有短暂的可用时间，此时能重复发送登录请求
+			setIsRedirecting(true);
 			setCookie("session", token, { maxAge: 60 * 60 * 24 });
 			router.push("/dashboard");
-		} catch {}
-		setLoading(false);
+		} catch {
+			setLoading(false);
+			setIsRedirecting(false);
+		}
 	};
 	return (
 		<>
@@ -87,9 +94,9 @@ function PasswordLogin({
 				<Button
 					icon={<IconSendStroked />}
 					onClick={handleLogin}
-					loading={loading}
+					loading={loading || isRedirecting}
 				>
-					登录
+					{isRedirecting ? "正在跳转…" : "登录"}
 				</Button>
 				<Button
 					type="secondary"
