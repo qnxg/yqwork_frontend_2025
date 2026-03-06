@@ -11,8 +11,10 @@ import {
 	Select,
 	Space,
 	Tag,
+	Table,
 	Timeline,
 	Modal,
+	Tooltip,
 } from "@douyinfe/semi-ui-19";
 import { FormApi } from "@douyinfe/semi-ui-19/lib/es/form";
 import { IconDelete, IconReplyStroked } from "@douyinfe/semi-icons";
@@ -24,7 +26,7 @@ import {
 	deleteFeedbackMsgApi,
 } from "@/api/weihuda/feedback";
 import { FeedbackStatusOptions } from "@/config/fields";
-import { hasPermission } from "@/utils";
+import { hasPermission, sliceString } from "@/utils";
 import { withToast } from "@/utils/action";
 import { RequiredRule } from "@/utils/form";
 
@@ -34,6 +36,7 @@ export interface FeedbackDetailPayload {
 	feedback: IFeedback;
 	messages: IFeedbackMsg[];
 	permissions: string[];
+	recentFeedbacks?: IFeedback[];
 }
 
 function formatDateTime(str: string) {
@@ -48,7 +51,7 @@ export default function FeedbackDetailIndex({
 	payload,
 }: Readonly<{ payload: FeedbackDetailPayload }>) {
 	const router = useRouter();
-	const { feedback, messages, permissions } = payload;
+	const { feedback, messages, permissions, recentFeedbacks } = payload;
 	const [feedbackData, setFeedbackData] = useState(feedback);
 	const [loading, setLoading] = useState("");
 	const replyFormApi = useRef<FormApi>(null);
@@ -115,6 +118,55 @@ export default function FeedbackDetailIndex({
 	const statusOption = FeedbackStatusOptions.find(
 		(o) => o.value === feedbackData.status,
 	);
+
+	const otherFeedbackColumns = useMemo(() => {
+		return [
+			{
+				title: "编号",
+				dataIndex: "id",
+				key: "id",
+				width: 65,
+			},
+			{
+				title: "问题描述",
+				dataIndex: "desc",
+				key: "desc",
+				ellipsis: true,
+				width: 200,
+				render: (text: string) => {
+					const display = sliceString(text, 30);
+					return (
+						<Tooltip content={text}>
+							<span className="cursor-default">{display}</span>
+						</Tooltip>
+					);
+				},
+			},
+			{
+				title: "反馈时间",
+				dataIndex: "createdAt",
+				key: "createdAt",
+				width: 160,
+				render: (v: string) => formatDateTime(v),
+			},
+			{
+				title: "状态",
+				dataIndex: "status",
+				key: "status",
+				width: 120,
+				render: (status: number) => {
+					const option = FeedbackStatusOptions.find(
+						(opt) => opt.value === status,
+					);
+					return option ? (
+						<Tag color={option.color}>{option.label}</Tag>
+					) : (
+						<Tag color="grey">未知</Tag>
+					);
+				},
+			},
+		];
+	}, []);
 
 	return (
 		<div className="max-w-4xl">
@@ -245,6 +297,33 @@ export default function FeedbackDetailIndex({
 					</>
 				)}
 			</Card>
+
+			{/* 同学号近期其他反馈 */}
+			{feedbackData.stuId && recentFeedbacks && recentFeedbacks.length > 0 && (
+				<Card title={"该用户近期其他反馈"} className="mt-4">
+					<Table
+						size="small"
+						rowKey="id"
+						columns={otherFeedbackColumns}
+						dataSource={recentFeedbacks}
+						pagination={false}
+						onRow={(record) => {
+							if (!record) return {};
+							return {
+								onClick: (e: unknown) => {
+									const target = (e as { target?: unknown }).target as
+										| HTMLElement
+										| undefined;
+									if (!target?.closest("button")) {
+										router.push(`/dashboard/weihuda/feedback/${record.id}`);
+									}
+								},
+								style: { cursor: "pointer" },
+							};
+						}}
+					/>
+				</Card>
+			)}
 		</div>
 	);
 }
