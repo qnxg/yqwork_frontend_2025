@@ -128,8 +128,6 @@ export default function AppBar({
 	const handleNavClick =
 		(items: { itemKey: ItemKey; link?: string }[]) =>
 		(data: { itemKey?: ItemKey; domEvent?: MouseEvent }) => {
-			console.log(items);
-			console.log(data);
 			const item = items.find((i) => i.itemKey === data.itemKey);
 			if (item?.link) {
 				data.domEvent?.preventDefault?.();
@@ -170,7 +168,7 @@ export default function AppBar({
 							<Image src={Logo} alt={"易千工作台"} className="h-7 w-7 ml-4" />
 							<div className="ml-4 font-bold">易千工作台</div>
 						</div>
-						<div className="flex-1">
+						<div className="flex-1 flex">
 							<Nav
 								selectedKeys={[appItem?.itemKey]}
 								isCollapsed={true}
