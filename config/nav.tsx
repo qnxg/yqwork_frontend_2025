@@ -8,6 +8,7 @@ import Icon, {
 	IconHome,
 	IconKeyStroked,
 	IconMail,
+	IconSend,
 	IconSetting,
 	IconShield,
 	IconShoppingBag,
@@ -115,6 +116,13 @@ export const NavWeihudaList: NavItem[] = [
 		icon: <IconMail />,
 		largeIcon: <IconMail size="large" />,
 		link: "/dashboard/weihuda/announcement",
+	},
+	{
+		itemKey: "notice",
+		text: "消息通知",
+		icon: <IconSend />,
+		largeIcon: <IconSend size="large" />,
+		link: "/dashboard/weihuda/notice",
 	},
 	{
 		itemKey: "feedback",

@@ -10,20 +10,14 @@ export interface INotice {
 	content: string;
 	/** 收件人 */
 	stuId: string;
-	/** 发送时间 */
-	sendTime: string;
 	/** 是否完整显示在首页 */
-	isShow: number | boolean;
+	isShow: boolean;
 	/** 状态 */
-	status: number | boolean;
-	/** 结果 */
-	result: string;
-	/** 关联类型 */
-	bindType?: string;
-	/** 关联的数据id */
-	bindId?: number;
-	/** 按钮配置 */
-	btnConfig: string;
+	status: number;
+	/** 跳转链接 */
+	url?: string;
+	/** 发送时间 */
+	createdAt: string;
 }
 
 export interface INoticePageResponseData {
@@ -32,7 +26,10 @@ export interface INoticePageResponseData {
 }
 
 export interface INoticePageQueryData
-	extends IPageQueryData, Partial<INotice> {}
+	extends IPageQueryData, Partial<Pick<INotice, "stuId" | "status">> {
+	from?: string;
+	to?: string;
+}
 
 /**
  * 获取消息通知列表分页
@@ -45,21 +42,20 @@ export async function getNoticePageApi(queryData: INoticePageQueryData) {
 	return data;
 }
 
-/**
- * 新增消息通知
- */
-export async function postNoticeApi(postData: Partial<INotice>) {
+export async function getNoticeApi(id: number) {
 	const r = await createServerAxios();
-	const data: INoticePageResponseData = await r.post("/notice", postData);
+	const data: INotice = await r.get(`/notice/${id}`);
 	return data;
 }
 
+type INoticePostData = Pick<INotice, "stuId" | "content" | "isShow" | "url">;
+
 /**
- * 编辑消息通知
+ * 新增消息通知
  */
-export async function putNoticeByIdApi(id: number, putData: Partial<INotice>) {
+export async function postNoticeApi(postData: INoticePostData) {
 	const r = await createServerAxios();
-	const data: INoticePageResponseData = await r.put(`/notice/${id}`, putData);
+	const data: INoticePageResponseData = await r.post("/notice", postData);
 	return data;
 }
 
