@@ -307,12 +307,6 @@ export default function TermConfigTab({
 				<div className="space-y-1 mt-3 h-[400px] overflow-y-auto">
 					{canEdit && (
 						<div className="flex flex-wrap items-end gap-3 p-3 rounded border border-dashed border-[var(--semi-color-border)]">
-							<Input
-								placeholder="学期开始年份，如 2025"
-								value={addYear}
-								onChange={(v) => setAddYear(String(v ?? ""))}
-								style={{ width: 160 }}
-							/>
 							<Select
 								placeholder="学期类型"
 								value={addType}
