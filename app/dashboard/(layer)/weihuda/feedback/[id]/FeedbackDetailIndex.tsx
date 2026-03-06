@@ -219,15 +219,27 @@ export default function FeedbackDetailIndex({
 								rules={[RequiredRule]}
 							/>
 							<div className="flex">
-								<Button
-									icon={<IconReplyStroked />}
-									type="primary"
-									onClick={handleAddReply}
-									loading={loading === "reply"}
-									className="ml-auto"
-								>
-									添加
-								</Button>
+								<div className="ml-auto">
+									<Button
+										type="secondary"
+										onClick={async () => {
+											await handleAddReply();
+											await handleStatusChange(3); // 3 已解决
+										}}
+										loading={loading === "reply"}
+									>
+										添加并标记为已解决
+									</Button>
+									<Button
+										icon={<IconReplyStroked />}
+										type="primary"
+										onClick={handleAddReply}
+										loading={loading === "reply"}
+										className="ml-2"
+									>
+										添加
+									</Button>
+								</div>
 							</div>
 						</Form>
 					</>
