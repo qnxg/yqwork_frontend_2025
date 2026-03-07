@@ -57,7 +57,11 @@ function PasswordLogin({
 }) {
 	const router = useRouter();
 	const form = useRef<FormApi>(null);
+	const passwordInputRef = useRef<HTMLInputElement>(null);
+
 	const [loading, setLoading] = useState(false);
+	const [isRedirecting, setIsRedirecting] = useState(false);
+
 	const handleLogin = async () => {
 		if (!form.current) return;
 		setLoading(true);
@@ -65,18 +69,63 @@ function PasswordLogin({
 			const { username, password } = await form.current!.validate();
 			const token = await withToast(
 				() => postLoginApi(username, password),
-				"登录成功",
+				"登录成功，请稍待页面加载……",
 			);
+			// 登录成功后到跳转首页的时间段，应保持登录按钮不可用
+			// 否则登录按钮会有短暂的可用时间，此时能重复发送登录请求
+			setIsRedirecting(true);
 			setCookie("session", token, { maxAge: 60 * 60 * 24 });
 			router.push("/dashboard");
-		} catch {}
-		setLoading(false);
+		} catch {
+			setLoading(false);
+			setIsRedirecting(false);
+		}
 	};
+
+	const handleUsernameInputKeyDown = (
+		e: React.KeyboardEvent<HTMLInputElement>,
+	) => {
+		// 忽略除回车以外的按键；且若表单未初始化，不拦截事件
+		if (e.key !== "Enter" || !form.current) return;
+
+		// 未输入学号时，不应响应回车
+		if (!form.current.getValue("username")) {
+			e.preventDefault();
+			e.stopPropagation();
+			return;
+		}
+
+		// 未输入密码时，回车应将焦点转移至密码输入框而不是触发表单提交
+		if (!form.current.getValue("password")) {
+			e.preventDefault();
+			e.stopPropagation();
+			passwordInputRef.current?.focus();
+			return;
+		}
+	};
+
+	const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			form.current?.submitForm();
+		}
+	};
+
 	return (
 		<>
-			<Form getFormApi={(api) => (form.current = api)}>
-				<Form.Input label="学号" field="username" rules={[RequiredRule]} />
+			<Form
+				getFormApi={(api) => (form.current = api)}
+				onKeyDown={handleFormKeyDown}
+				onSubmit={() => handleLogin()}
+			>
 				<Form.Input
+					label="学号"
+					field="username"
+					rules={[RequiredRule]}
+					onKeyDown={handleUsernameInputKeyDown}
+				/>
+				<Form.Input
+					ref={passwordInputRef}
 					label="密码"
 					field="password"
 					rules={[RequiredRule]}
@@ -86,10 +135,10 @@ function PasswordLogin({
 			<div className="mt-4">
 				<Button
 					icon={<IconSendStroked />}
-					onClick={handleLogin}
-					loading={loading}
+					onClick={() => form.current?.submitForm()}
+					loading={loading || isRedirecting}
 				>
-					登录
+					{isRedirecting ? "正在跳转…" : "登录"}
 				</Button>
 				<Button
 					type="secondary"
