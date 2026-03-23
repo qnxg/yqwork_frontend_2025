@@ -82,6 +82,7 @@ export async function putUserPwdApi(oldPwd: string, newPwd: string) {
 export interface IUserWhoAmIResponseData {
 	user: IUser;
 	permissions: IPermission[];
+	roles: Pick<IRole, "id" | "name">[];
 }
 
 export async function getUserWhoAmI() {
