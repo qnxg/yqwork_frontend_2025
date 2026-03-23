@@ -23,6 +23,7 @@ import {
 	IUserPageQueryData,
 	IUserPostData,
 	IUserPutData,
+	IUserWhoAmIResponseData,
 } from "@/api/qnxg/user";
 import { IDepartment } from "@/api/qnxg/department";
 import { IRole } from "@/api/qnxg/role";
@@ -39,7 +40,7 @@ import {
 import { withToast } from "@/utils/action";
 
 export interface UserIndexPayload {
-	user: IUser;
+	whoami: IUserWhoAmIResponseData;
 	departments: IDepartment[];
 	roles: IRole[];
 	permissions: string[];
@@ -297,7 +298,7 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 							编辑
 						</Button>
 					)}
-					{canDelete && record.id !== payload.user.id && (
+					{canDelete && record.id !== payload.whoami.user.id && (
 						<Button
 							theme="light"
 							type="danger"
@@ -321,17 +322,12 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 
 	// 获取可以设置的角色（对于管理员，可以设置所有的角色；非管理员只能设置自己角色的子集）
 	const getRoleOptions = () => {
+		let availableRoles;
 		if (isAdmin(payload.permissions)) {
-			return payload.roles.map((role) => ({
-				label: role.name,
-				value: role.id,
-			}));
+			availableRoles = payload.roles;
+		} else {
+			availableRoles = payload.whoami.roles;
 		}
-		const userRoles = userRolesMap[payload.user.id] || [];
-		const userRoleIds = userRoles.map((r) => r.id);
-		const availableRoles = payload.roles.filter((role) =>
-			userRoleIds.includes(role.id),
-		);
 		return availableRoles.map((role) => ({
 			label: role.name,
 			value: role.id,
@@ -344,7 +340,7 @@ const UserIndex = ({ payload }: { payload: UserIndexPayload }) => {
 			return departmentOptions;
 		}
 		return departmentOptions.filter(
-			(opt) => opt.value === payload.user.info.departmentId,
+			(opt) => opt.value === payload.whoami.user.info.departmentId,
 		);
 	};
 

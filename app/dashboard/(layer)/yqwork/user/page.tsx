@@ -28,7 +28,7 @@ export default async function Page({
 	const userPageResponse = await getUserPageApi(queryData);
 
 	const payload: UserIndexPayload = {
-		user: whoami.user,
+		whoami,
 		departments,
 		roles,
 		data: userPageResponse,
