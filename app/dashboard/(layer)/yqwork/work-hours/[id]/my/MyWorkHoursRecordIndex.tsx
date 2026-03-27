@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import {
 	Card,
 	Space,
@@ -33,6 +33,46 @@ export interface MyWorkHoursRecordPayload {
 	permissions: string[];
 }
 
+/** 组字（中文输入法等）期间不向父级同步，避免受控值刷新打断 IME */
+function WorkDescFieldInput({
+	value,
+	disabled,
+	onCommit,
+}: {
+	value: string;
+	disabled: boolean;
+	onCommit: (v: string) => void;
+}) {
+	const [inner, setInner] = useState(value);
+	const composingRef = useRef(false);
+
+	// 父级 value 与本地 inner 在输入过程中由 onChange / compositionEnd 对齐；保存后整表重载时会 remount
+
+	return (
+		<Input
+			value={inner}
+			onChange={(v) => {
+				setInner(v);
+				if (!composingRef.current) {
+					onCommit(v);
+				}
+			}}
+			onCompositionStart={() => {
+				composingRef.current = true;
+			}}
+			onCompositionEnd={(e) => {
+				composingRef.current = false;
+				const v = e.currentTarget.value;
+				setInner(v);
+				onCommit(v);
+			}}
+			placeholder="请输入工作描述"
+			className="w-[300px]"
+			disabled={disabled}
+		/>
+	);
+}
+
 const MyWorkHoursRecordIndex = ({
 	payload,
 }: {
@@ -49,25 +89,28 @@ const MyWorkHoursRecordIndex = ({
 		(currentWorkHoursRecord && currentWorkHoursRecord.status !== 0) ||
 		new Date(workHours.endTime) < new Date();
 
-	const handleAddWorkDesc = () => {
-		setWorkDescs([...workDescs, { desc: "", hour: 1 }]);
-	};
+	const handleAddWorkDesc = useCallback(() => {
+		setWorkDescs((prev) => [...prev, { desc: "", hour: 1 }]);
+	}, []);
 
-	const handleDeleteWorkDesc = (index: number) => {
-		const newWorkDescs = [...workDescs];
-		newWorkDescs.splice(index, 1);
-		setWorkDescs(newWorkDescs);
-	};
+	const handleDeleteWorkDesc = useCallback((index: number) => {
+		setWorkDescs((prev) => {
+			const next = [...prev];
+			next.splice(index, 1);
+			return next;
+		});
+	}, []);
 
-	const handleWorkDescChange = (
-		index: number,
-		field: keyof IWorkDescItem,
-		value: string | number,
-	) => {
-		const newWorkDescs = [...workDescs];
-		newWorkDescs[index] = { ...newWorkDescs[index], [field]: value };
-		setWorkDescs(newWorkDescs);
-	};
+	const handleWorkDescChange = useCallback(
+		(index: number, field: keyof IWorkDescItem, value: string | number) => {
+			setWorkDescs((prev) => {
+				const next = [...prev];
+				next[index] = { ...next[index], [field]: value };
+				return next;
+			});
+		},
+		[],
+	);
 
 	const handleSave = async () => {
 		const hasEmptyDesc = workDescs.some((item) => !item.desc.trim());
@@ -92,71 +135,74 @@ const MyWorkHoursRecordIndex = ({
 		setLoading(false);
 	};
 
-	const columns = [
-		{
-			title: "序号",
-			dataIndex: "index",
-			key: "index",
-			render: (_: unknown, __: unknown, index: number) => index + 1,
-			width: 60,
-		},
-		{
-			title: "工作描述",
-			dataIndex: "desc",
-			key: "desc",
-			render: (_: unknown, record: IWorkDescItem, index: number) => (
-				<Input
-					value={record.desc}
-					onChange={(value) => handleWorkDescChange(index, "desc", value)}
-					placeholder="请输入工作描述"
-					className="w-[300px]"
-					disabled={unEditable}
-				/>
-			),
-		},
-		{
-			title: "工作时长（小时）",
-			dataIndex: "hour",
-			key: "hour",
-			render: (_: unknown, record: IWorkDescItem, index: number) => (
-				<InputNumber
-					value={record.hour}
-					onChange={(value) => handleWorkDescChange(index, "hour", value || 0)}
-					min={1}
-					step={1}
-					precision={0}
-					className="w-[100px]"
-					disabled={unEditable}
-				/>
-			),
-		},
-		{
-			title: "参考工资（元）",
-			dataIndex: "salary",
-			key: "salary",
-			render: (_: unknown, record: IWorkDescItem) => (
-				<span>{(record.hour * WAGE_PER_HOUR).toFixed(0)}</span>
-			),
-			width: 120,
-		},
-		{
-			title: "操作",
-			dataIndex: "action",
-			key: "action",
-			render: (_: unknown, __: unknown, index: number) =>
-				!unEditable && (
-					<Button
-						theme="light"
-						type="danger"
-						icon={<IconDelete />}
-						onClick={() => handleDeleteWorkDesc(index)}
-					>
-						删除
-					</Button>
+	const columns = useMemo(
+		() => [
+			{
+				title: "序号",
+				dataIndex: "index",
+				key: "index",
+				render: (_: unknown, __: unknown, index: number) => index + 1,
+				width: 60,
+			},
+			{
+				title: "工作描述",
+				dataIndex: "desc",
+				key: "desc",
+				render: (_: unknown, record: IWorkDescItem, index: number) => (
+					<WorkDescFieldInput
+						value={record.desc}
+						disabled={unEditable}
+						onCommit={(v) => handleWorkDescChange(index, "desc", v)}
+					/>
 				),
-			width: 100,
-		},
-	];
+			},
+			{
+				title: "工作时长（小时）",
+				dataIndex: "hour",
+				key: "hour",
+				render: (_: unknown, record: IWorkDescItem, index: number) => (
+					<InputNumber
+						value={record.hour}
+						onChange={(value) =>
+							handleWorkDescChange(index, "hour", value || 0)
+						}
+						min={1}
+						step={1}
+						precision={0}
+						className="w-[100px]"
+						disabled={unEditable}
+					/>
+				),
+			},
+			{
+				title: "参考工资（元）",
+				dataIndex: "salary",
+				key: "salary",
+				render: (_: unknown, record: IWorkDescItem) => (
+					<span>{(record.hour * WAGE_PER_HOUR).toFixed(0)}</span>
+				),
+				width: 120,
+			},
+			{
+				title: "操作",
+				dataIndex: "action",
+				key: "action",
+				render: (_: unknown, __: unknown, index: number) =>
+					!unEditable && (
+						<Button
+							theme="light"
+							type="danger"
+							icon={<IconDelete />}
+							onClick={() => handleDeleteWorkDesc(index)}
+						>
+							删除
+						</Button>
+					),
+				width: 100,
+			},
+		],
+		[unEditable, handleWorkDescChange, handleDeleteWorkDesc],
+	);
 
 	const totalHours = workDescs.reduce((sum, item) => sum + item.hour, 0);
 	const totalSalary = totalHours * WAGE_PER_HOUR;
