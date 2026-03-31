@@ -250,6 +250,7 @@ const GenWorkHoursFinal = ({
 			</div>
 			<Table
 				bordered
+				rowKey="id"
 				columns={[
 					{
 						title: "序号",
@@ -287,8 +288,8 @@ const GenWorkHoursFinal = ({
 						title: "本月开展的主要工作",
 						dataIndex: "workDescs",
 						render: (text: IResultViewDataItem["workDescs"]) => {
-							return text.split("\n").map((item: string, i: number) => {
-								return <p key={i + 1}>{item}</p>;
+							return text.split("\n").map((item: string, index: number) => {
+								return <p key={index}>{item}</p>;
 							});
 						},
 					},

@@ -165,6 +165,7 @@ export default function DepartmentIndex({
 			<Table
 				columns={columns}
 				dataSource={payload.departments}
+				rowKey="id"
 				pagination={false}
 				loading={false}
 			/>

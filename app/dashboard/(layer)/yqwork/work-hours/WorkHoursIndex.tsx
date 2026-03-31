@@ -261,6 +261,7 @@ export default function WorkHoursIndex({
 			<Table
 				columns={columns}
 				dataSource={data}
+				rowKey="id"
 				pagination={{
 					pageSize: urlPageSize,
 					currentPage: urlPage,
