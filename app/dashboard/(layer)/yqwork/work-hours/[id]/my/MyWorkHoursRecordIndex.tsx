@@ -33,6 +33,8 @@ export interface MyWorkHoursRecordPayload {
 	permissions: string[];
 }
 
+type LocalWorkDescItem = IWorkDescItem & { _localId: string };
+
 /** 组字（中文输入法等）期间不向父级同步，避免受控值刷新打断 IME */
 function WorkDescFieldInput({
 	value,
@@ -80,8 +82,18 @@ const MyWorkHoursRecordIndex = ({
 }) => {
 	const { user, record, workHours } = payload;
 	const [currentWorkHoursRecord, setCurrentWorkHoursRecord] = useState(record);
-	const [workDescs, setWorkDescs] = useState<IWorkDescItem[]>(
-		currentWorkHoursRecord?.workDescs || [],
+	const workDescIdRef = useRef(currentWorkHoursRecord?.workDescs?.length || 0);
+	const createLocalWorkDescItem = useCallback(
+		(item: IWorkDescItem): LocalWorkDescItem => ({
+			...item,
+			_localId: `work-desc-${workDescIdRef.current++}`,
+		}),
+		[],
+	);
+	const [workDescs, setWorkDescs] = useState<LocalWorkDescItem[]>(() =>
+		(currentWorkHoursRecord?.workDescs || []).map((item) =>
+			createLocalWorkDescItem(item),
+		),
 	);
 	const [loading, setLoading] = useState(false);
 
@@ -90,8 +102,11 @@ const MyWorkHoursRecordIndex = ({
 		new Date(workHours.endTime) < new Date();
 
 	const handleAddWorkDesc = useCallback(() => {
-		setWorkDescs((prev) => [...prev, { desc: "", hour: 1 }]);
-	}, []);
+		setWorkDescs((prev) => [
+			...prev,
+			createLocalWorkDescItem({ desc: "", hour: 1 }),
+		]);
+	}, [createLocalWorkDescItem]);
 
 	const handleDeleteWorkDesc = useCallback((index: number) => {
 		setWorkDescs((prev) => {
@@ -126,7 +141,11 @@ const MyWorkHoursRecordIndex = ({
 		setLoading(true);
 		try {
 			const updatedRecord = await withToast(
-				() => putMyWorkHoursRecordApi(workHours.id, workDescs),
+				() =>
+					putMyWorkHoursRecordApi(
+						workHours.id,
+						workDescs.map(({ desc, hour }) => ({ desc, hour })),
+					),
 				"保存成功",
 			);
 			if (!updatedRecord) return;
@@ -148,7 +167,7 @@ const MyWorkHoursRecordIndex = ({
 				title: "工作描述",
 				dataIndex: "desc",
 				key: "desc",
-				render: (_: unknown, record: IWorkDescItem, index: number) => (
+				render: (_: unknown, record: LocalWorkDescItem, index: number) => (
 					<WorkDescFieldInput
 						value={record.desc}
 						disabled={unEditable}
@@ -160,7 +179,7 @@ const MyWorkHoursRecordIndex = ({
 				title: "工作时长（小时）",
 				dataIndex: "hour",
 				key: "hour",
-				render: (_: unknown, record: IWorkDescItem, index: number) => (
+				render: (_: unknown, record: LocalWorkDescItem, index: number) => (
 					<InputNumber
 						value={record.hour}
 						onChange={(value) =>
@@ -178,7 +197,7 @@ const MyWorkHoursRecordIndex = ({
 				title: "参考工资（元）",
 				dataIndex: "salary",
 				key: "salary",
-				render: (_: unknown, record: IWorkDescItem) => (
+				render: (_: unknown, record: LocalWorkDescItem) => (
 					<span>{(record.hour * WAGE_PER_HOUR).toFixed(0)}</span>
 				),
 				width: 120,
@@ -310,6 +329,7 @@ const MyWorkHoursRecordIndex = ({
 					<Table
 						columns={columns}
 						dataSource={workDescs}
+						rowKey="_localId"
 						pagination={false}
 						empty={<span>暂无工作项，请点击添加工作项</span>}
 					/>
