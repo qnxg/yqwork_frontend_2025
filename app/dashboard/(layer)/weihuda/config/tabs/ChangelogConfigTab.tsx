@@ -2,7 +2,7 @@
 
 import { Button, Collapse, Input, Toast } from "@douyinfe/semi-ui-19";
 import { IconDelete, IconPlus } from "@douyinfe/semi-icons";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { putMiniConfigByIdApi } from "@/api/weihuda/miniConfig";
 import { withToast } from "@/utils/action";
 import { CHANGELOG_CONFIG_KEY } from "@/config";
@@ -17,8 +17,15 @@ interface ChangelogEntryRaw {
 	content: ChangelogSectionRaw[];
 }
 
-interface ChangelogSectionWithId extends ChangelogSectionRaw {
+interface ChangelogSectionWithId {
 	id: string;
+	title: string;
+	details: ChangelogDetailWithId[];
+}
+
+interface ChangelogDetailWithId {
+	id: string;
+	text: string;
 }
 
 interface ChangelogEntryWithId {
@@ -36,7 +43,10 @@ function parseChangelog(value: string): ChangelogEntryWithId[] {
 			content: (entry.content || []).map((sec, si) => ({
 				id: `sec-${ei}-${si}`,
 				title: sec.title,
-				details: sec.details || [],
+				details: (sec.details || []).map((detail, di) => ({
+					id: `detail-${ei}-${si}-${di}`,
+					text: detail,
+				})),
 			})),
 		}));
 	} catch {
@@ -49,7 +59,9 @@ function toChangelogJson(entries: ChangelogEntryWithId[]): string {
 		time: e.time,
 		content: e.content.map((s) => ({
 			title: s.title,
-			details: s.details.filter((d) => d.trim() !== ""),
+			details: s.details
+				.map((d) => d.text)
+				.filter((detail) => detail.trim() !== ""),
 		})),
 	}));
 	return JSON.stringify(arr);
@@ -68,17 +80,20 @@ export default function ChangelogConfigTab({
 		parseChangelog(changelogStr),
 	);
 	const [saving, setSaving] = useState(false);
+	const localIdRef = useRef(0);
+
+	const createLocalId = (prefix: string) => `${prefix}-${localIdRef.current++}`;
 
 	const handleAddEntry = () => {
 		setEntries((prev) => [
 			{
-				id: `entry-${Date.now()}`,
+				id: createLocalId("entry"),
 				time: "",
 				content: [
 					{
-						id: `sec-${Date.now()}`,
+						id: createLocalId("sec"),
 						title: "增加",
-						details: [""],
+						details: [{ id: createLocalId("detail"), text: "" }],
 					},
 				],
 			},
@@ -105,9 +120,9 @@ export default function ChangelogConfigTab({
 							content: [
 								...e.content,
 								{
-									id: `sec-${Date.now()}`,
+									id: createLocalId("sec"),
 									title: "",
-									details: [""],
+									details: [{ id: createLocalId("detail"), text: "" }],
 								},
 							],
 						}
@@ -151,7 +166,7 @@ export default function ChangelogConfigTab({
 	const handleUpdateSectionDetails = (
 		entryId: string,
 		sectionId: string,
-		details: string[],
+		details: ChangelogDetailWithId[],
 	) => {
 		setEntries((prev) =>
 			prev.map((e) =>
@@ -277,13 +292,19 @@ export default function ChangelogConfigTab({
 										</div>
 										<ul className="list-disc list-inside text-sm text-[var(--semi-color-text-2)] space-y-1">
 											{canEdit
-												? section.details.map((detail, di) => (
-														<li key={di} className="flex items-center gap-2">
+												? section.details.map((detail) => (
+														<li
+															key={detail.id}
+															className="flex items-center gap-2"
+														>
 															<Input
-																value={detail}
+																value={detail.text}
 																onChange={(v) => {
-																	const next = [...section.details];
-																	next[di] = String(v ?? "");
+																	const next = section.details.map((d) =>
+																		d.id === detail.id
+																			? { ...d, text: String(v ?? "") }
+																			: d,
+																	);
 																	handleUpdateSectionDetails(
 																		entry.id,
 																		section.id,
@@ -300,18 +321,27 @@ export default function ChangelogConfigTab({
 																icon={<IconDelete />}
 																onClick={() => {
 																	const next = section.details.filter(
-																		(_, i) => i !== di,
+																		(d) => d.id !== detail.id,
 																	);
 																	handleUpdateSectionDetails(
 																		entry.id,
 																		section.id,
-																		next.length ? next : [""],
+																		next.length
+																			? next
+																			: [
+																					{
+																						id: createLocalId("detail"),
+																						text: "",
+																					},
+																				],
 																	);
 																}}
 															/>
 														</li>
 													))
-												: section.details.map((d, i) => <li key={i}>{d}</li>)}
+												: section.details.map((d) => (
+														<li key={d.id}>{d.text}</li>
+													))}
 										</ul>
 										{canEdit && (
 											<Button
@@ -322,7 +352,10 @@ export default function ChangelogConfigTab({
 												onClick={() => {
 													handleUpdateSectionDetails(entry.id, section.id, [
 														...section.details,
-														"",
+														{
+															id: createLocalId("detail"),
+															text: "",
+														},
 													]);
 												}}
 											>

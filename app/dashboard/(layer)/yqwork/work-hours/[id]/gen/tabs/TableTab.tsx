@@ -409,8 +409,8 @@ const GenWorkHoursTable = ({
 	};
 
 	// 一行数据展示组件
-	const DataRow = (props: { item: IWorkHoursRecord; index: number }) => {
-		const { item, index } = props;
+	const DataRow = (props: { item: IWorkHoursRecord }) => {
+		const { item } = props;
 		// 拖拽相关
 		const [isHovering, setIsHovering] = useState(false);
 		const dropRef = useRef(null);
@@ -450,7 +450,6 @@ const GenWorkHoursTable = ({
 		return (
 			// 一条记录
 			<div
-				key={index}
 				className={classNames("my-2 rounded flex bg-gray-100", {
 					"bg-yellow-100": !item.userInfo.info.qingonggang,
 				})}
@@ -458,7 +457,6 @@ const GenWorkHoursTable = ({
 				{/* 本人信息 */}
 				<div className="mr-16">
 					<DataItem
-						key={index}
 						data={{
 							id: item.id,
 							name: item.userInfo.info.name,
@@ -480,12 +478,12 @@ const GenWorkHoursTable = ({
 						{ "bg-gray-300": isHovering },
 					)}
 				>
-					{includedDataItems.map((v, i) => {
+					{includedDataItems.map((v) => {
 						// 给v打tag，标记为包含区域中的数据'
 						v.includeArea = true;
 						return (
 							<DataItem
-								key={i}
+								key={v.id}
 								data={v}
 								onDelete={(data: IDataItem) => unInclude(data, item)}
 								onHourChange={(newHour) => onIncludeChange(v, item, newHour)}
@@ -599,8 +597,8 @@ const GenWorkHoursTable = ({
 						<div className="mr-16 w-[100px] flex-shrink-0">总工资</div>
 					</div>
 
-					{data.map((item, index) => {
-						return <DataRow key={index} item={item} index={index} />;
+					{data.map((item) => {
+						return <DataRow key={item.id} item={item} />;
 					})}
 				</div>
 			</div>
