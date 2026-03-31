@@ -478,7 +478,7 @@ const GenWorkHoursTable = ({
 						{ "bg-gray-300": isHovering },
 					)}
 				>
-					{includedDataItems.map((v, i) => {
+					{includedDataItems.map((v) => {
 						// 给v打tag，标记为包含区域中的数据'
 						v.includeArea = true;
 						return (

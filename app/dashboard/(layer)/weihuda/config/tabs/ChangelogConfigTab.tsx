@@ -293,7 +293,10 @@ export default function ChangelogConfigTab({
 										<ul className="list-disc list-inside text-sm text-[var(--semi-color-text-2)] space-y-1">
 											{canEdit
 												? section.details.map((detail) => (
-														<li key={detail.id} className="flex items-center gap-2">
+														<li
+															key={detail.id}
+															className="flex items-center gap-2"
+														>
 															<Input
 																value={detail.text}
 																onChange={(v) => {
@@ -336,7 +339,9 @@ export default function ChangelogConfigTab({
 															/>
 														</li>
 													))
-												: section.details.map((d) => <li key={d.id}>{d.text}</li>)}
+												: section.details.map((d) => (
+														<li key={d.id}>{d.text}</li>
+													))}
 										</ul>
 										{canEdit && (
 											<Button
