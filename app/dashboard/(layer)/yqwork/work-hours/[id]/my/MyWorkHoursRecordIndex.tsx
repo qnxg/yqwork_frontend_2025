@@ -85,7 +85,8 @@ const MyWorkHoursRecordIndex = ({
 	const [currentWorkHoursRecord, setCurrentWorkHoursRecord] = useState(record);
 
 	// 给 IWorkDescItem 添加唯一的 _localId
-	const workDescIdRef = useRef(currentWorkHoursRecord?.workDescs?.length || 0);
+	// workDescId 从 0 开始下发，
+	const workDescIdRef = useRef(0);
 	const createLocalWorkDescItem = useCallback(
 		(item: IWorkDescItem): LocalWorkDescItem => ({
 			...item,
