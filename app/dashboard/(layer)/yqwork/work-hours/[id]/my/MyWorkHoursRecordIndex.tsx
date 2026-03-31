@@ -33,6 +33,7 @@ export interface MyWorkHoursRecordPayload {
 	permissions: string[];
 }
 
+// 给 IWorkDescItem 添加一个 _localId 字段，用于 Table 的 rowKey，防止表单数据与表格渲染不同步
 type LocalWorkDescItem = IWorkDescItem & { _localId: string };
 
 /** 组字（中文输入法等）期间不向父级同步，避免受控值刷新打断 IME */
@@ -82,6 +83,8 @@ const MyWorkHoursRecordIndex = ({
 }) => {
 	const { user, record, workHours } = payload;
 	const [currentWorkHoursRecord, setCurrentWorkHoursRecord] = useState(record);
+
+	// 给 IWorkDescItem 添加唯一的 _localId
 	const workDescIdRef = useRef(currentWorkHoursRecord?.workDescs?.length || 0);
 	const createLocalWorkDescItem = useCallback(
 		(item: IWorkDescItem): LocalWorkDescItem => ({
@@ -95,6 +98,7 @@ const MyWorkHoursRecordIndex = ({
 			createLocalWorkDescItem(item),
 		),
 	);
+
 	const [loading, setLoading] = useState(false);
 
 	const unEditable =
@@ -144,6 +148,7 @@ const MyWorkHoursRecordIndex = ({
 				() =>
 					putMyWorkHoursRecordApi(
 						workHours.id,
+						// 把 LocalWorkDescItem 转换为 IWorkDescItem
 						workDescs.map(({ desc, hour }) => ({ desc, hour })),
 					),
 				"保存成功",
