@@ -60,7 +60,7 @@ const GenWorkHoursFinal = ({
 	useEffect(() => {
 		// 筛选出在勤工助学岗位的数据
 		const filteredData = data
-			.filter((item) => item.userInfo.info.qingonggang && item.status > 2)
+			.filter((item) => item.status > 2)
 			.sort(
 				(a, b) => a.userInfo.info.departmentId - b.userInfo.info.departmentId,
 			);
